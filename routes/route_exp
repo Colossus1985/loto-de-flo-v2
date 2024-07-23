@@ -1,0 +1,18 @@
+//======== PIM =================================================================================================================================================
+Route::prefix('pim')->middleware(['web'])->group(function () {
+    // Produits
+    Route::get('produit/liste'                              , [PimProduitController::class, 'listeRecherche'])                      ->name('pimProduitListe');
+    Route::post('produit/liste'                             , [PimProduitController::class, 'listeRecherche'])                      ->name('pimProduitListe');
+
+    Route::get('produit/detail-stock-prix/{sku}'            , [PimProduitController::class, 'produitDetailStockPrix'])->where('sku', '(.*)')    ->name('pimProduitDetailStockPrix');
+    Route::post('produit/detail-stock-prix/{sku}'            , [PimProduitController::class, 'produitDetailStockPrix'])->where('sku', '(.*)')    ->name('pimProduitDetailStockPrix');
+    Route::get('produit/log-api-detail/{api_log_entete_id}' , [PimProduitController::class, 'logApiDetail'])                         ->name('pimProduitLogApiDetail');
+
+    Route::get('produit/data/refresh'                       , [PimProduitController::class, 'dataRefresh'])                          ->name('pimDataRefresh');
+
+    Route::post('produit/etat/'                             , [PimProduitController::class, 'etatProduct'])                          ->name('pimEtatProduct');
+    Route::post('produit/traitement/'                       , [PimProduitController::class, 'traitementProduct'])                    ->name('pimTraiterProduct');
+
+    Route::get('produit/redirect-presta/{id_product}'      , [PimProduitController::class, 'redirectPresta'])                       ->name('redirectPresta');
+
+});
