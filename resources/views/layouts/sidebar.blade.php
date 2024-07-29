@@ -17,66 +17,94 @@ $user_ok = $local ? true : $user_ok;
     <!-- Sidebar -->
     <div class="sidebar">
       <!-- Sidebar Menu -->
-      <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
-{{-- ########################################################################################################### --}}
-            <li id="main_cmd_web" class="nav-item{{ Request::segment(1) === 'cmde' ? ' menu-is-opening menu-open' : null }}">
-                {{-------------------------------------------------------------------------- 
-                    COMMANDES WEB
-                --------------------------------------------------------------------------}}
-                <a href="#" class="nav-link">
-                    {{-- <i class="nav-icon fa fa-circle text-yellow"></i> --}}
-                    <p>
-                        COMMANDES WEB
-                        <i class="right fa text-yellow"></i>
-                    </p>
-                </a>
+                <li id="participants" class="nav-item{{ Request::segment(1) === 'participants' ? ' menu-is-opening menu-open' : null }}">
 
-                <ul class="nav nav-treeview pl-3">
-                    </ul>
-                <ul class="nav nav-treeview pl-3">
-                    
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="fa fa-area-chart text-yellow text-S"></i> 
-                            <p class="ms-2">
-                                Stats
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview pl-3">
-                            <li class="nav-item ">
-                                <a href="" class="nav-link">
-                                    <i class="fa-solid fa-signal text-S"></i>
-                                    <p class="ms-2">
-                                        Evolution
-                                        <i class="right fas"></i>
-                                    </p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            
-                <li  id="main_cmd_web" class="">
                     <a href="#" class="nav-link">
-                        <p>PIM</p>
+                        <p>
+                            PARTICIPANTS
+                            <i class="right fa text-yellow"></i>
+                        </p>
                     </a>
+
                     <ul class="nav nav-treeview pl-3">
                         <li class="nav-item">
-                            <a href="" class="nav-link">
+                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(3) === 'ALL' ? ' active' : ''}}">
                                 <p>
-                                    Liste des produits
+                                    Ajouter
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(3) === 'ALL' ? ' active' : ''}}">
+                                <p>
+                                    Jouer
                                 </p>
                             </a>
                         </li>
                     </ul>
-                </li>  
 
+                </li>
 
-{{-- ############################################################################################################## --}}
+                {{-- ########################################################################################## --}}
+
+                <li id="gains" class="nav-item{{ Request::segment(1) === 'participants' ? ' menu-is-opening menu-open' : null }}">
+                    <a href="#" class="nav-link">
+                        <p>
+                            GAINS
+                            <i class="right fa text-yellow"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview pl-3">
+
+                        <li class="nav-item">
+                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(3) === 'ALL' ? ' active' : ''}}">
+                                <p>
+                                    Gains
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(3) === 'ALL' ? ' active' : ''}}">
+                                <p>
+                                    Ajouter Gain
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- ########################################################################################## --}}
+
+                <li id="groupes" class="nav-item{{ Request::segment(1) === 'participants' ? ' menu-is-opening menu-open' : null }}">
+                    <a href="#" class="nav-link">
+                        <p>
+                            GROUPES
+                            <i class="right fa text-yellow"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview pl-3">
+
+                        <li class="nav-item">
+                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(3) === 'ALL' ? ' active' : ''}}">
+                                <p>
+                                    Créer Groupe
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(3) === 'ALL' ? ' active' : ''}}">
+                                <p>
+                                    Gérer Groupe
+                                </p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
             </ul>
         </nav>
       <!-- /.sidebar-menu -->
