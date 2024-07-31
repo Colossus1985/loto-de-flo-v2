@@ -25,13 +25,14 @@ class participantController extends Controller
      * voir les détails d'un participant
      * @param int id du participant
      */
-    public function getParticipant($id_participant)
+    public function getParticipant($id_participant, $actif = 1)
     {
         // dd($id_participant);
-        $participant        = $this->participant->getParticipant('id', $id_participant);
+        $participant        = $this->participant->getParticipant('id', $id_participant, $actif);
         $money              = $this->money->getMoney('id_pseudo', $id_participant);
         $groups             = $this->groups->getGroups();
 
+        // dd($participant);
         return view('pages.participant', [
             'actions' => $money, 
             'participant' => $participant,
@@ -47,9 +48,11 @@ class participantController extends Controller
     public function getParticipants()
     {
         $participants = $this->participant->getParticipants();
+        $participants_del = $this->participant->getParticipantsDeleted();
 
         return view('pages.participants', [
             'participants'      => $participants,
+            'participants_del'  => $participants_del,
         ]);
     }
 
@@ -79,7 +82,6 @@ class participantController extends Controller
         $pseudo = $request->inputPseudo;
         $email = $request->inputEmail;
 
-        //###---controle if pseudo or mail are already in use---###############################################
         if ($email == null || $email == "") {
             $participantExist = $this->participant->getParticipant('pseudo', $pseudo);
             
@@ -99,7 +101,6 @@ class participantController extends Controller
         //=== ajout du participant dans le système
         $resInsert = $this->participant->addParticipant($request);
 
-        dd($resInsert);
         if ($resInsert['erreur']) {
             return redirect()->back()
                 ->with('success', $pseudo." enregistré(e) avec succès !");
@@ -110,109 +111,91 @@ class participantController extends Controller
         
     }
 
-    public function participantDelete($idParticipant)
+    /**
+     * supprimer un participant (soft delete)
+     * maj champ delete dans la table (1 deleted, 0 actif)
+     */
+    public function participantDelete($id_articipant)
     {
         
-        $participant = Participants::query()
-            ->select('pseudo')
-            ->where('id', '=', $idParticipant)
-            ->get();
-        $pseudo = $participant[0]->pseudo;
-
-        $admins = Users::query()
-            ->select('admin')
-            ->where('admin', '=', 1)
-            ->get();
-
-        if (Auth::user()->admin == 1 && Auth::user()->id != $idParticipant) {
-            $this->deleteUser($idParticipant, $pseudo);
-            return redirect()->route('home', 'all')
-                ->with('success', $pseudo.' a été supprimé avec succès!');
-
-        } else if (Auth::user()->admin == 1 && Auth::user()->id == $idParticipant) {
-            if (count($admins) > 1 ) {
-                $this->deleteUser($idParticipant, $pseudo);
-                
-                Auth::logout();
-                session()->invalidate();
-                session()->regenerateToken();
-                
-                return redirect()->route('logReg')
-                    ->with('success', 'Vous ne faite plus parti(e) de "Loto avec Flo"');
-
-            } else {
-                return redirect()->back()
-                    ->with('error', 'Tant que vous êtes le seul administrateur vous ne pouvez vous supprimer!'); 
-            }
-
-        } else if (Auth::user()->admin == 0) {
-            $this->deleteUser($idParticipant, $pseudo);
-            Auth::logout();
-            session()->invalidate();
-            session()->regenerateToken();
-            
-            return redirect()->route('logReg')
-                ->with('success', 'Vous ne faite plus parti(e) de "Loto avec Flo"');
+        $participant = $this->participant->getParticipant('id', $id_articipant);
+        $champs = [
+            'actif'     => 0,
+            'nameGroup' => null,
+            'groupID'   => null,
+        ];
+        $res_maj_participant = $this->participant->updateParticipant($champs, $id_articipant);
+        if ($res_maj_participant['erreur']) {
+            return redirect()->back()
+                ->with('erreur', $res_maj_participant['message']);
         }
-            
-        
+        $pseudo = $participant->pseudo;
+
+        return redirect()->route('participants')
+                ->with('success', $pseudo.' a été srendu avec succès!');
+
     }
 
-    public function updateParticipant(Request $request, $idParticipant)
+    /**
+     * rendre un participant actif
+     * maj champ delete dans la table (1 deleted, 0 actif)
+     */
+    public function participantActiver($id_articipant)
+    {
+        $participant = $this->participant->getParticipant('id', $id_articipant, 0);
+        $res_maj_participant = $this->participant->updateParticipant(['actif' => 1,], $id_articipant);
+        if ($res_maj_participant['erreur']) {
+            return redirect()->back()
+                ->with('erreur', $res_maj_participant['message']);
+        }
+        $pseudo = $participant->pseudo;
+
+        return redirect()->route('participants')
+                ->with('success', $pseudo.' a été rendu actif(ve)!');
+
+    }
+
+    /**
+     * maj d'informations d'un participant (nom, pseudo, email, mdp ...)
+     * @param Request infos
+     * @param int id du participant
+     */
+    public function updateParticipant(Request $request, $id_participant)
     {
         // dd($request);
         $controle = $this->controlesInputs($request);
-        if (!$controle[0]['bool']) {
+        // dd($controle);
+        if ($controle[0]['erreur']) {
             return redirect()->back()
                     ->with('error', $controle[0]['message']);
         }
 
-        $request->validate([
-            'inputPasswordActuel' => 'required|current_password',
-        ]);
-
-        $pseudo = $request->inputPseudo;
-
-        $participant = Participants::find($idParticipant);
-
-        $inputNameGroupNew = $request->inputNameGroupNew;
-        if ($inputNameGroupNew == "Pas de groupe") {
-            $inputNameGroup = Null;
-            // dd($inputNameGroup);
-            $id_group = Null;
-            $participant->id_group = $id_group;
+        $nameGroup = $request->inputNameGroupNew;
+        if ($nameGroup == "Pas de groupe") {
+            $nameGroup = null;
+            $groupID = null;
         } else {
-            $inputNameGroup = $inputNameGroupNew;
-            $id_group = Groups::where('nameGroup', '=', $inputNameGroup)->first();
-            $participant->id_group = $id_group['id'];
+            $groupID = $this->groups->getGroup('nameGroup', $nameGroup);
         }
         
-        $participant->firstName = $request->inputFirstName;
-        $participant->lastName = $request->inputLastName;
-        $participant->nameGroup = $inputNameGroup;
-        $participant->pseudo = $request->inputPseudo;
-        $participant->email = $request->inputEmail;
-        $participant->tel = $request->inputTel;
-        try {
-            $participant->save();
-        } catch (Exception $e){
+        $champs = [
+            'firstName'     => $request->inputFirstName,
+            'lastName'      => $request->inputLastName,
+            'nameGroup'     => $nameGroup,
+            'pseudo'        => $request->inputPseudo,
+            'email'         => $request->inputEmail,
+            'tel'           => $request->inputTel,
+            'groupID'       => $groupID,
+        ];
+        $res_update_participant = $this->participant->updateParticipant($champs, $id_participant);
+
+        if ($res_update_participant['erreur']) {
             return redirect()->back()
-                ->with('error', 'La mise à jour a échoué!');
-        }
-        
-        $user = User::find($idParticipant);
-        if ($request -> inputPassword != "" || $request -> inputPassword != null) {
-            $user->password = Hash::make($request -> inputPassword);
-        } 
-        try {
-            $user->save();
-        } catch (Exception $e){
-            return redirect()->back()
-                ->with('error', 'La mise à jour a échoué!');
+                ->with('error', $res_update_participant['message']);
         }
 
         return redirect()->back()
-            ->with('success', $pseudo.' mis(e) à jour!');
+            ->with('success', $res_update_participant['message']);
     }
 
     public function controlesInputs($request)

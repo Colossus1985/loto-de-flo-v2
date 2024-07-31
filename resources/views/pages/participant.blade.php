@@ -11,7 +11,7 @@
     .visible_non {opacity: 0;}
 </style>
 
-<div class="mx-5 fw-bold">
+<div class="p-5 fw-bold">
     <form method="POST" action="{{ route('updateParticipant', $participant->id) }}">
         @csrf
         <div class="d-flex flex-row">
@@ -75,7 +75,7 @@
             </div>
         </div>
 
-        <div class="d-flex flex-row">
+        {{-- <div class="d-flex flex-row">
             <div class="form-group form-floating mb-3 me-3 d-flex flex-fill">
                 <input id="floatingPassword" 
                     type="password" maxlength="20" 
@@ -111,7 +111,7 @@
                     placeholder="Confirm Password">
                 <label for="floatingConfirmPassword">Confirmer Password</label>
             </div>
-        </div>
+        </div> --}}
 
         <div class="d-flex flex-row">
             <div class="form-group form-floating mb-3 me-3">
@@ -247,15 +247,30 @@
     {{-- {{ $actions->links() }} --}}
     
 
-    <form action="{{ route('participantDelete', $participant->id) }}" method="get">
-        @csrf
-        @method('DELETE')
-        <div class="">
-            <button type="submit" class="btn btn-danger"
-                onclick="return confirm('Veux tu vraiment supprimer {{ $participant->pseudo }} ?');">Supprimer {{$participant->pseudo}}
-            </button>
-        </div>
-    </form>
+    <div class="my-4">
+        @if ($participant->actif == 1)
+            <form action="{{ route('participantDelete', $participant->id) }}" method="get">
+                @csrf
+                <div class="">
+                    <button type="submit" class="btn btn-danger"
+                        onclick="return confirm('Veux tu vraiment supprimer {{ $participant->pseudo }} ?');">Supprimer {{$participant->pseudo}}
+                    </button>
+                </div>
+            </form>
+        @else {{ route('participantActiver', $participant->id) }}
+            <form action="{{ route('participantActiver', $participant->id) }}" method="get">
+                @csrf
+                <div class="">
+                    <button type="submit" class="btn btn-success"
+                        onclick="return confirm('Veux tu vraiment annuler la suppression de {{ $participant->pseudo }} ?');">Rendre actif(ve) {{$participant->pseudo}}
+                    </button>
+                </div>
+            </form>
+        @endif
+    </div>
+    
+        
+    
 </div>
 
 <script src="https://cdn.datatables.net/plug-ins/2.1.2/api/sum().js"></script>

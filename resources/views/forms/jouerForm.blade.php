@@ -1,7 +1,10 @@
 @extends('layouts.main')
 @section('content')
 
-<div class="container">
+<div class="p-5">
+    <div class="mb-3">
+        <h2>Miser pour jouer</h2>
+    </div>
     <form method="POST" action="{{ route('debitAll') }}">
         @csrf
         <div class="d-flex flex-row">

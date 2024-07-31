@@ -32,11 +32,14 @@ class ParticipantRepository
     public function getParticipants($champ = '', $value = '')
     {
         if ($champ == '') {
-            $query = Participants::query();
+            $query = Participants::query()
+                ->where('actif', 1) 
+                ;
         } else {
             $query = Participants::query()
                 ->where($champ, $value)
-            ;
+                ->where('actif', 1) 
+                ;
         }
         $res = $query->get();
         
@@ -49,12 +52,25 @@ class ParticipantRepository
      * @param string valeur du champ
      * @return collection du participant
      */
-    public function getParticipant($champ, $value)
+    public function getParticipant($champ, $value, $actif = 1)
     {
         $query = Participants::query()
             ->where($champ, $value)
+            ->where('actif', $actif) 
             ;
         $res = $query->first();
+        return $res;
+    }
+
+    /**
+     * récupérer la liste des participants rednu inactif
+     */
+    public function getParticipantsDeleted()
+    {
+        $query = Participants::query()
+            ->where('actif', 0) 
+            ;
+        $res = $query->get();
         return $res;
     }
 
@@ -111,6 +127,7 @@ class ParticipantRepository
     /**
      * update participant 
      * @param array champ => value
+     * @param int id du participant
      */
     public function updateParticipant($array, $id_participant)
     {
