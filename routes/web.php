@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('dashbord', [logController::class, 'dashbord'])->name('dashbord');
 
-Route::get('participants/participant/{idParticipant}', [participantController::class, 'participant'])->name('participant');
+Route::get('participants/participant/{idParticipant}', [participantController::class, 'getParticipant'])->name('participant');
 
 Route::get('participants/participants', [participantController::class, 'getParticipants'])->name('participants');
 

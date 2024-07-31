@@ -22,6 +22,26 @@ class participantController extends Controller
     }
 
     /**
+     * voir les détails d'un participant
+     * @param int id du participant
+     */
+    public function getParticipant($id_participant)
+    {
+        // dd($id_participant);
+        $participant        = $this->participant->getParticipant('id', $id_participant);
+        $money              = $this->money->getMoney('id_pseudo', $id_participant);
+        $groups             = $this->groups->getGroups();
+
+        return view('pages.participant', [
+            'actions' => $money, 
+            'participant' => $participant,
+            'groups' => $groups
+            ]
+        );
+    }
+
+
+    /**
      * affichage de la liste de tous les participants
      */
     public function getParticipants()

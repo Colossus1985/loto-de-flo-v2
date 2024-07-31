@@ -19,7 +19,6 @@
 
 {{-- Datatable --}}
 <script src="{{asset('js/commun.js')}}"></script>
-<script src="{{asset('css/commun.css')}}"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/2.1.2/css/dataTables.dataTables.css" />
 <script src="https://cdn.datatables.net/2.1.2/js/dataTables.js"></script>
 
