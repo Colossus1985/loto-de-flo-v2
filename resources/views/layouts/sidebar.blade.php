@@ -19,6 +19,17 @@ $user_ok = $local ? true : $user_ok;
       <!-- Sidebar Menu -->
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <li id="dashbord" class="nav-item{{ Request::segment(1) === 'dashbord' ? ' menu-is-opening menu-open' : null }}">
+
+                    <li class="nav-item">
+                        <a href="{{ route('dashbord') }}" class="nav-link {{Route::currentRouteNamed('dashbord') && Request::segment(1) === 'dashbord' ? ' active' : ''}}">
+                            <p>
+                                DASHBORD
+                            </p>
+                        </a>
+                    </li>
+
+                </li>
 
                 <li id="participants" class="nav-item{{ Request::segment(1) === 'participants' ? ' menu-is-opening menu-open' : null }}">
 
@@ -31,16 +42,23 @@ $user_ok = $local ? true : $user_ok;
 
                     <ul class="nav nav-treeview pl-3">
                         <li class="nav-item">
-                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(3) === 'ALL' ? ' active' : ''}}">
+                            <a href="{{ route('addParticipantForm') }}" class="nav-link {{Route::currentRouteNamed('addParticipantForm') && Request::segment(1) === 'participants' ? ' active' : ''}}">
                                 <p>
                                     Ajouter
                                 </p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(3) === 'ALL' ? ' active' : ''}}">
+                            <a href="{{ route('jouerForm') }}" class="nav-link  {{Route::currentRouteNamed('jouerForm') && Request::segment(1) === 'participants' ? ' active' : ''}}">
                                 <p>
                                     Jouer
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('participants') }}" class="nav-link {{Route::currentRouteNamed('participants') && Request::segment(1) === 'participants' ? ' active' : ''}}">
+                                <p>
+                                    Joueurs
                                 </p>
                             </a>
                         </li>
@@ -50,7 +68,7 @@ $user_ok = $local ? true : $user_ok;
 
                 {{-- ########################################################################################## --}}
 
-                <li id="gains" class="nav-item{{ Request::segment(1) === 'participants' ? ' menu-is-opening menu-open' : null }}">
+                <li id="gains" class="nav-item{{ Request::segment(1) === 'gains' ? ' menu-is-opening menu-open' : null }}">
                     <a href="#" class="nav-link">
                         <p>
                             GAINS
@@ -60,14 +78,14 @@ $user_ok = $local ? true : $user_ok;
                     <ul class="nav nav-treeview pl-3">
 
                         <li class="nav-item">
-                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(3) === 'ALL' ? ' active' : ''}}">
+                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(1) === 'gains' ? ' active' : ''}}">
                                 <p>
                                     Gains
                                 </p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(3) === 'ALL' ? ' active' : ''}}">
+                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(1) === 'gains' ? ' active' : ''}}">
                                 <p>
                                     Ajouter Gain
                                 </p>
@@ -78,7 +96,7 @@ $user_ok = $local ? true : $user_ok;
 
                 {{-- ########################################################################################## --}}
 
-                <li id="groupes" class="nav-item{{ Request::segment(1) === 'participants' ? ' menu-is-opening menu-open' : null }}">
+                <li id="groups" class="nav-item{{ Request::segment(1) === 'groups' ? ' menu-is-opening menu-open' : null }}">
                     <a href="#" class="nav-link">
                         <p>
                             GROUPES
@@ -88,14 +106,14 @@ $user_ok = $local ? true : $user_ok;
                     <ul class="nav nav-treeview pl-3">
 
                         <li class="nav-item">
-                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(3) === 'ALL' ? ' active' : ''}}">
+                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(1) === 'groups' ? ' active' : ''}}">
                                 <p>
                                     Créer Groupe
                                 </p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(3) === 'ALL' ? ' active' : ''}}">
+                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(1) === 'groups' ? ' active' : ''}}">
                                 <p>
                                     Gérer Groupe
                                 </p>

@@ -4,10 +4,6 @@
 <link rel="stylesheet" href="{{asset('AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css')}}">
 <link rel="stylesheet" href="{{asset('AdminLTE-3.2.0/dist/css/adminlte.min.css?v=3.2.0')}}">
 
-<!-- Include Slick CSS -->
-<link rel="stylesheet" type="text/css" href="slick/slick.css"/>
-<link rel="stylesheet" type="text/css" href="slick/slick-theme.css"/>
-
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
@@ -20,3 +16,10 @@
 {{-- Jquery --}}
 <script src="{{asset('AdminLTE-3.2.0/plugins/jquery/jquery.min.js')}}"></script>
 <script scr="{{asset('js/app.js')}}" defer></script>
+
+{{-- Datatable --}}
+<script src="{{asset('js/commun.js')}}"></script>
+<script src="{{asset('css/commun.css')}}"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/2.1.2/css/dataTables.dataTables.css" />
+<script src="https://cdn.datatables.net/2.1.2/js/dataTables.js"></script>
+

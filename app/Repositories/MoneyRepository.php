@@ -6,11 +6,52 @@ use App\Models\Gains;
 use App\Models\Groups;
 use App\Models\Money;
 use App\Models\Participants;
-use App\Models\User;
-use App\Models\Users;
+
+use Illuminate\Database\QueryException;
+use Exception;
 
 class MoneyRepository 
 {
+    /**
+     * récupérer le montant 
+     * table : Money
+     * @param string champ à chercher
+     * @param string valeur à chercher
+     */
+    public function getMoney($champ, $valeur)
+    {
+        $query = Money::query()
+            ->where($champ, $valeur)
+            ->orderBy('id', 'desc')
+            ;
+        $res = $query->get();
+        return $res;
+    }
+
+    /**
+     * ajout ligne 
+     * Table Money
+     * @param array chmaps = values
+     */
+    public function insertMoney($data)
+    {
+        try {
+            $money = New Money();
+            // Mettre à jour les champs avec les valeurs fournies dans le tableau $array
+            foreach ($data as $key => $value) {
+                $money->$key = $value;
+            }
+            $money->save();
+
+            return ['erreur' => false, 'message' => 'Insertion dans la table Money effectué avec succès !'];
+        } catch (Exception $e) {
+            return ['erreur' => true, 'message' => 'Erreur lors de la mise à jour de la table Money : ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * récupérer le fond des groups
+     */
     public function fonds($groups)
     {
         $arrayFondsByGroup = [];
