@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('dashbord', [logController::class, 'dashbord'])->name('dashbord');
 
 Route::get('participants/participant/{idParticipant}', [participantController::class, 'getParticipant'])->name('participant');
+Route::post('participants/changeGroup/{idParticipant}', [groupsController::class, 'changeGroup'])->name('changeGroup');
 
 Route::get('participants/participants', [participantController::class, 'getParticipants'])->name('participants');
 
@@ -23,7 +24,6 @@ Route::post('participants/debitAll', [moneyController::class, 'debitAll'])->name
 
 Route::get('participants/participantDelete/{idParticipant}', [participantController::class, 'participantDelete'])->name('participantDelete');
 Route::post('participants/updateParticipant/{idParticipant}', [participantController::class, 'updateParticipant'])->name('updateParticipant');
-Route::post('participants/changeGroup/{idParticipant}', [participantController::class, 'changeGroup'])->name('changeGroup');
 Route::get('participants/searchParticipant', [participantController::class, 'searchParticipant'])->name('searchParticipant');
 Route::get('participants/rgpd', [participantController::class, 'rgpd'])->name('rgpd');
 
