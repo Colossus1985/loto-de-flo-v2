@@ -31,6 +31,8 @@ Route::post('gains/addGain', [gainController::class, 'addGain'])->name('addGain'
 Route::post('group/addGroup', [groupsController::class, 'addGroup'])->name('addGroup');
 Route::get('group/participantGroupForm', [groupsController::class, 'participantGroupForm'])->name('participantGroupForm');
 Route::post('group/participantGroup', [groupsController::class, 'participantGroup'])->name('participantGroup');
+Route::get('group/delete/{id_group}', [groupsController::class, 'groupDelete'])->name('groupDelete');
+Route::get('group/rallume/{id_group}', [groupsController::class, 'groupRallume'])->name('groupRallume');
 
 
 

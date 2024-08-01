@@ -186,7 +186,8 @@
                                 <td>
                                     <a href="{{ route('participant', [$participant->id, $participant->actif]) }}" 
                                         title="voir détails" 
-                                        class="ui-tooltip btn-sm btn-info d-flex justify-content-center align-items-center mt-1 text-decoration-none">
+                                        class="ui-tooltip btn-sm btn-info d-flex justify-content-center align-items-center mt-1 text-decoration-none"
+                                        target="blanc">
                                         {{ $participant->pseudo }}
                                     </a>
                                 </td>

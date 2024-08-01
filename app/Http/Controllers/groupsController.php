@@ -27,10 +27,12 @@ class groupsController extends Controller
     {
         $groups = $this->groups->getGroups();
         $participants = $this->participant->getParticipants();
+        $groups_details = $this->groups->getVueGroupe();
 
         return view('pages.groupParticipant', [
-            'groups'        => $groups,
-            'participants'  => $participants,
+            'groups'            => $groups,
+            'participants'      => $participants,
+            'groups_details'    => $groups_details,
         ]);
     }
 
@@ -128,6 +130,39 @@ class groupsController extends Controller
         
         return redirect()->back()
             ->with('success', 'Modification de groupe a été enregistrée avec succès !');
+    }
+
+    /**
+     * supprimer un group (soft)
+     * enlever les participant du groupe supprimer
+     * @param int id du groupe
+     */
+    public function groupDelete($id_group)
+    {
+        $res_delete_group = $this->groups->deleteGroup($id_group);
+        if ($res_delete_group['erreur']) {
+            return redirect()->back()
+                ->with('error', $res_delete_group['message']);
+        } 
+        
+        return redirect()->back()
+            ->with('success', 'Le groupe à été rendu inactif.');
+    }
+
+    /**
+     * Reactiver un groupe
+     * @param int id du groupe
+     */
+    public function groupRallume($id_group)
+    {
+        $res = $this->groups->groupRallume($id_group);
+
+        if ($res['erreur']) {
+            return redirect()->back()
+                ->with('error', $res['message']);
+        } 
+        return redirect()->back()
+            ->with('success', $res['message']);
     }
 
 }
