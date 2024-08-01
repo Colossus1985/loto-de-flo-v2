@@ -33,12 +33,12 @@ class MoneyRepository
      * Table Money
      * @param array chmaps = values
      */
-    public function insertMoney($data)
+    public function insertMoney($champs)
     {
         try {
             $money = New Money();
             // Mettre à jour les champs avec les valeurs fournies dans le tableau $array
-            foreach ($data as $key => $value) {
+            foreach ($champs as $key => $value) {
                 $money->$key = $value;
             }
             $money->save();

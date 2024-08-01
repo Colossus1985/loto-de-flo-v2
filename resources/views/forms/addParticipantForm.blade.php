@@ -29,29 +29,19 @@
             <label for="floatingTel">Téléphone</label>
         </div>
 
-        <div class="form-group form-floating mb-3 d-flex">
-            <input type="password" class="form-control flex-fill" name="inputPassword" minlength="3" maxlength="20"  id="floatingPassword" placeholder="Password">
-            <label for="floatingPassword">Password</label>
-        </div>
-
-        <div class="form-group form-floating mb-3 d-flex">
-            <input type="password" class="form-control flex-fill" name="inputPassword_confirmation" minlength="3" maxlength="20" id="floatingConfirmPassword" placeholder="Confirm Password">
-            <label for="floatingConfirmPassword">Confirm Password</label>
-        </div>
-
         <div class="border border-3 rounded-3 form-group form-floating mb-3 d-flex flex-fill flex-column">
             <div class="">
                 <p class="mt-1 mb-2 ps-3">Choisis le Group : </p>
             </div>
-             @foreach ($groups as $group)
+             @foreach ($groups as $i => $group)
                 <div class="ms-3 form-check form-switch">
                     <input class="form-check-input me-3"
                         type="radio" 
                         name="inputNameGroup" 
                         role="switch" 
-                        id="flexSwitchNameGroup" 
+                        id="flexSwitchNameGroup_{{$i}}" 
                         value="{{ $group->nameGroup }}">
-                    <label class="form-check-label" for="flexSwitchNameGroup">{{ $group->nameGroup }}</label>
+                    <label class="form-check-label" for="flexSwitchNameGroup_{{$i}}">{{ $group->nameGroup }}</label>
                 </div>
             @endforeach
         </div>

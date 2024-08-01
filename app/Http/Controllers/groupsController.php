@@ -19,6 +19,82 @@ class groupsController extends Controller
         $this->groups           = $groups;
         $this->money             = $money;
     }
+
+    /**
+     * affichage du formulaire pour gérer un group
+     */
+    public function participantGroupForm()
+    {
+        $groups = $this->groups->getGroups();
+        $participants = $this->participant->getParticipants();
+
+        return view('pages.groupParticipant', [
+            'groups'        => $groups,
+            'participants'  => $participants,
+        ]);
+    }
+
+    /**
+     * composer un group avec des participants
+     */
+    public function participantGroup(Request $request)
+    {
+        $nameGroup = $request->inputNameGroup;
+        $id_group = $this->groups->getGroup('nameGroup', $nameGroup);
+
+        $arrayParticipant = $request->inputParticipantArray;
+        
+        foreach ($arrayParticipant as $participant) {
+            $participant_details = $this->participant->getParticipant('pseudo', $participant);
+            $id_participant = $participant_details->id;
+
+            $champs = [
+                'nameGroup' => $nameGroup,
+                'groupID'  => $id_group->id,
+            ];
+            $res_update_participant = $this->participant->updateParticipant($champs, $id_participant);
+            if ($res_update_participant['erreur']) {
+                return redirect()->back()
+                    ->with('error', $res_update_participant['erreur']);
+            }
+        }
+        
+        return redirect()->back()
+            ->with('success', 'Nouvelles composition du group '.$nameGroup.' réussi!');
+    }
+
+    /**
+     * ajout d'un nouveau group
+     * @param Request le nom du group
+     */
+    public function addGroup(Request $request)
+    {
+        $controle = controlesInputs($request);
+        // dd($controle);
+        if ($controle[0]['erreur']) {
+            return redirect()->back()
+                    ->with('error', $controle[0]['message']);
+        }
+
+        $nameGroup = $request->inputNameGroup;
+        $groupExists = $this->groups->getGroup('nameGroup', $nameGroup);
+
+        if ($groupExists) {
+            return redirect()->back()
+                ->with('error', 'Le groupe '.$nameGroup.' existe déjà!');
+        }
+
+        $champs = ['nameGroup' => $nameGroup];
+        $res_insert_group = $this->groups->addGroup($champs);
+        if ($res_insert_group['erreur']) {
+            return redirect()->back()
+                ->with('error', $res_insert_group['message']);
+        }
+
+        return redirect()->back()
+            ->with('success', 'Le groupe "'.$nameGroup.'" à été crée avec succès!');
+    }
+
     /**
      * Changement de groupe pour un participant
      * @param request avec le nom du nouveau group
@@ -53,4 +129,5 @@ class groupsController extends Controller
         return redirect()->back()
             ->with('success', 'Modification de groupe a été enregistrée avec succès !');
     }
+
 }

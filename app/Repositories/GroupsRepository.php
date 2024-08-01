@@ -2,6 +2,9 @@
 
 namespace App\Repositories;
 
+use Illuminate\Database\QueryException;
+use Exception;
+
 use App\Models\Gains;
 use App\Models\Groups;
 use App\Models\Money;
@@ -36,6 +39,28 @@ class GroupsRepository
         $res = $query->first();
 
         return $res;
+    }
+
+    /**
+     * ajouter d'un nouveau group
+     */
+    public function addGroup($champs) 
+    {
+        $message = $champs['nameGroup'] . " créé avec succès !";
+
+        try {
+            $query = Groups::query();
+            $query->insert($champs);
+
+        } catch (QueryException $e) {
+            // Gestion des erreurs de base de données
+            return ['erreur' => true, 'message' => 'Erreur de base de données : ' . $e->getMessage()];
+        } catch (Exception $e) {
+            // Gestion des autres exceptions
+            return ['erreur' => true, 'message' => 'Erreur : ' . $e->getMessage()];
+        }
+
+        return ['erreur' => false, 'message' => $message];
     }
 
 

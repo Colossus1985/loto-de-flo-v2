@@ -2,6 +2,9 @@
 
 namespace App\Repositories;
 
+use Illuminate\Database\QueryException;
+use Exception;
+
 use App\Models\Gains;
 use App\Models\Groups;
 use App\Models\Money;

@@ -24,6 +24,15 @@ Route::post('participants/addParticipant', [participantController::class, 'addPa
 Route::get('participants/jouerForm', [moneyController::class, 'getJouerForm'])->name('jouerForm');
 Route::post('participants/debitAll', [moneyController::class, 'debitAll'])->name('debitAll');
 
+Route::get('gains/getGainHistory', [gainController::class, 'getGainHistory'])->name('getGainHistory');
+Route::get('gains/addGain', [gainController::class, 'addGainForm'])->name('addGainForm');
+Route::post('gains/addGain', [gainController::class, 'addGain'])->name('addGain');
+
+Route::post('group/addGroup', [groupsController::class, 'addGroup'])->name('addGroup');
+Route::get('group/participantGroupForm', [groupsController::class, 'participantGroupForm'])->name('participantGroupForm');
+Route::post('group/participantGroup', [groupsController::class, 'participantGroup'])->name('participantGroup');
+
+
 
 
 Route::get('participants/searchParticipant', [participantController::class, 'searchParticipant'])->name('searchParticipant');
@@ -33,8 +42,4 @@ Route::post('addMoney/{idParticipant}', [moneyController::class, 'addMoney'])->n
 Route::post('debitMoney/{idParticipant}', [moneyController::class, 'debitMoney'])->name('debitMoney');
 Route::post('retriveMoney/{idParticipant}', [moneyController::class, 'retriveMoney'])->name('retriveMoney');
 
-Route::post('addGain', [gainController::class, 'addGain'])->name('addGain');
-Route::get('getGainHistory', [gainController::class, 'getGainHistory'])->name('getGainHistory');
 
-Route::post('addGroup', [groupsController::class, 'addGroup'])->name('addGroup');
-Route::post('participantGroup', [groupsController::class, 'participantGroup'])->name('participantGroup');

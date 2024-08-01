@@ -24,7 +24,7 @@ class ParticipantRepository
     }
 
     /**
-     * récupérer tous les participants
+     * récupérer tous les participants actifs
      * @param string nom colonne
      * @param string valeur du champ
      * @return collection des participants
@@ -58,6 +58,7 @@ class ParticipantRepository
             ->where($champ, $value)
             ->where('actif', $actif) 
             ;
+            
         $res = $query->first();
         return $res;
     }
@@ -83,7 +84,6 @@ class ParticipantRepository
     public function addParticipant($request) 
     {
         $group      = $this->groups->getGroup('nameGroup', $request->input('inputNameGroup'));
-        $erreur     = true;
         $message    = "$request->pseudo ajouté avec succès !";
 
         try {
@@ -100,10 +100,10 @@ class ParticipantRepository
 
         } catch (QueryException $e) {
             // Gestion des erreurs de base de données
-            return ['erreur' => $erreur, 'message' => 'Erreur de base de données : ' . $e->getMessage()];
+            return ['erreur' => true, 'message' => 'Erreur de base de données : ' . $e->getMessage()];
         } catch (Exception $e) {
             // Gestion des autres exceptions
-            return ['erreur' => $erreur, 'message' => 'Erreur : ' . $e->getMessage()];
+            return ['erreur' => true, 'message' => 'Erreur : ' . $e->getMessage()];
         }
 
         try {
@@ -114,13 +114,13 @@ class ParticipantRepository
             $money->id_pseudo = $id_pseudo;
         } catch (QueryException $e) {
             // Gestion des erreurs de base de données
-            return ['erreur' => $erreur, 'message' => 'Erreur de base de données : ' . $e->getMessage()];
+            return ['erreur' => true, 'message' => 'Erreur de base de données : ' . $e->getMessage()];
         } catch (Exception $e) {
             // Gestion des autres exceptions
-            return ['erreur' => $erreur, 'message' => 'Erreur : ' . $e->getMessage()];
+            return ['erreur' => true, 'message' => 'Erreur : ' . $e->getMessage()];
         }
 
-        return ['erreur', $erreur, 'message' => $message];
+        return ['erreur' => false, 'message' => $message];
 
     }
 
@@ -141,22 +141,12 @@ class ParticipantRepository
             }
             $participant->save();
 
-            return ['erreur' => false, 'message' => 'Participant mis à jour avec succès !'];
         } catch (Exception $e) {
             // Gestion des erreurs, par exemple, si le participant n'est pas trouvé ou si une autre erreur se produit
             return ['erreur' => true, 'message' => 'Erreur lors de la mise à jour : ' . $e->getMessage()];
         }
-    }
 
-    public function groupsDisponible() 
-    {
-        $groupsDispo = Groups::join(
-                'participants', 'groups.id', '=', 'participants.id_group')
-            ->select('groups.nameGroup')
-            ->groupByRaw('groups.nameGroup')
-            ->get();
-
-        return $groupsDispo;
+        return ['erreur' => false, 'message' => 'Participant mis à jour avec succès !'];
     }
 
 }

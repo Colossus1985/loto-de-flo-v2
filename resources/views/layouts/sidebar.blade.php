@@ -78,14 +78,14 @@ $user_ok = $local ? true : $user_ok;
                     <ul class="nav nav-treeview pl-3">
 
                         <li class="nav-item">
-                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(1) === 'gains' ? ' active' : ''}}">
+                            <a href="{{ route('getGainHistory') }}" class="nav-link {{Route::currentRouteNamed('getGainHistory') && Request::segment(1) === 'gains' ? ' active' : ''}}">
                                 <p>
                                     Gains
                                 </p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(1) === 'gains' ? ' active' : ''}}">
+                            <a href="{{ route('addGainForm') }}" class="nav-link {{Route::currentRouteNamed('addGainForm') && Request::segment(1) === 'gains' ? ' active' : ''}}">
                                 <p>
                                     Ajouter Gain
                                 </p>
@@ -106,14 +106,13 @@ $user_ok = $local ? true : $user_ok;
                     <ul class="nav nav-treeview pl-3">
 
                         <li class="nav-item">
-                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(1) === 'groups' ? ' active' : ''}}">
-                                <p>
-                                    Créer Groupe
-                                </p>
-                            </a>
+                            <button class="nav-link text-left" data-bs-toggle="modal"
+                                data-bs-target="#modalAddGroup">
+                                Créer Groupe
+                            </button>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link {{Route::currentRouteNamed('cmdWeb') && Request::segment(1) === 'groups' ? ' active' : ''}}">
+                            <a href="{{ route('participantGroupForm') }}" class="nav-link {{Route::currentRouteNamed('participantGroupForm') && Request::segment(1) === 'groups' ? ' active' : ''}}">
                                 <p>
                                     Gérer Groupe
                                 </p>
@@ -129,3 +128,4 @@ $user_ok = $local ? true : $user_ok;
     </div>
     <!-- /.sidebar -->
 </aside>
+@include('modals.addGroup')
