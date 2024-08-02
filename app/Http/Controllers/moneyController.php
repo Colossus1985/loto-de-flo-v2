@@ -33,78 +33,92 @@ class moneyController extends Controller
         ]);
     }
 
-    public function addMoney(Request $request, $idParticipant)
+    /**
+     * ajout d'un montant en tant que gain ou crédit pour un participant
+     * @param Request
+     * @param int id du participant
+     */
+    public function addMoney(Request $request, $id_participant)
     {
-        $participant = Participants::query()
-            ->where('id', '=', $idParticipant)
-            ->get();
+        $participant    = $this->participant->getParticipant('id', $id_participant);
+        $money          = $this->money->getMoney('id_pseudo', $id_participant);
+        $credit         = $request->inputMontant;
+        $pseudo         = $request->input_pseudo;
 
-        $pseudo = $participant[0]->pseudo;
-
-        $money = Money::query()
-            ->where('id_pseudo', '=', $idParticipant)
-            ->orderBy('id', 'desc') // to get the last amount
-            ->get();
-
-        $credit = $request->inputMontant;
         $amount = $money[0]->amount;
-            $amount = $amount + $credit;
-        $totalAmount = $participant[0]->totalAmount;
-            $totalAmount = $totalAmount + $credit;
+        $amount = $amount + $credit;
+        $totalAmount = $participant->totalAmount;
+        $totalAmount = $totalAmount + $credit;
         
         $gain = $request->inputAddGain;
-        
-        $participant = Participants::find($idParticipant);
-        $participant->amount = number_format($amount, 2);
-        $participant->totalAmount = number_format($totalAmount, 2);
-        $participant->save();
 
-        $action = new Money();
-        $action->pseudo = $pseudo;
-        $action->id_pseudo = $idParticipant;
-        $action->amount = number_format($amount, 2);
-        if ($gain === "true") {
-            $action->creditGain = number_format($credit, 2);
-        } else {
-            $action->credit = number_format($credit, 2);
+        $champs = [
+            'amount'        => $amount,
+            'totalAmount'   => $totalAmount,
+        ];
+        $res_maj_participant = $this->participant->updateParticipant($champs, $id_participant);
+        if ($res_maj_participant['erreur']) {
+            return redirect()->back()
+                ->with('error', $res_maj_participant['message']);
         }
-        $action->save();
+
+        if ($gain === "true") {
+            $creditGain = $credit;
+            $credit     = 0.00;
+        } else {
+            $credit     = $credit;
+            $creditGain = 0.00;
+        }
+        $champs = [
+            'pseudo'        => $pseudo,
+            'id_pseudo'     => $id_participant,
+            'amount'        => $amount,
+            'creditGain'    => $creditGain,
+            'credit'        => $credit,
+        ];
+        $res_insert_money = $this->money->insertMoney($champs);
+        if ($res_insert_money['erreur']) {
+            return redirect()->back()
+                ->with('error', $res_insert_money['message']);
+        }
 
         return redirect()->back()
             ->with('success', $credit.'€ ajouté sur le compte de '. $pseudo);
     }
 
-    public function debitMoney(Request $request, $idParticipant)
+    public function debitMoney(Request $request, $id_participant)
     {
-        $participant = Participants::query()
-            ->where('id', '=', $idParticipant)
-            ->get();
-
-        $pseudo = $participant[0]->pseudo;
-
-        $money = Money::query()
-            ->where('id_pseudo', '=', $idParticipant)
-            ->orderBy('id', 'desc')
-            ->get();
+        $participant    = $this->participant->getParticipant('id', $id_participant);
+        $money          = $this->money->getMoney('id_pseudo', $id_participant);
+        $credit         = $request->inputMontant;
+        $pseudo         = $request->input_pseudo;
 
         $debit = $request->inputMontant;
         $amount = $money[0]->amount;
-            $amount = $amount - $debit;
-        $totalAmount = $participant[0]->totalAmount;
+        $amount = $amount - $debit;
+        $totalAmount = $participant->totalAmount;
         
+        $champs = [
+            'amount'        => $amount,
+            'totalAmount'   => $totalAmount,
+        ];
+        $res_maj_participant = $this->participant->updateParticipant($champs, $id_participant);
+        if ($res_maj_participant['erreur']) {
+            return redirect()->back()
+                ->with('error', $res_maj_participant['message']);
+        }
 
-        $participant = Participants::find($idParticipant);
-        $participant->amount = number_format($amount, 2);
-        $participant->totalAmount = number_format($totalAmount, 2);
-        $participant->save();
-
-        $action = new Money();
-        $action->pseudo = $pseudo;
-        $action->id_pseudo = $idParticipant;
-        $action->date = $request->inputDate;
-        $action->amount = number_format($amount, 2);
-        $action->debit = number_format($debit, 2);
-        $action->save();
+        $champs = [
+            'pseudo'        => $pseudo,
+            'id_pseudo'     => $id_participant,
+            'amount'        => $amount,
+            'debit'         => $debit,
+        ];
+        $res_insert_money = $this->money->insertMoney($champs);
+        if ($res_insert_money['erreur']) {
+            return redirect()->back()
+                ->with('error', $res_insert_money['message']);
+        }
 
         return redirect()->back()
             ->with('success', $debit.'€ retiré du compte de '. $pseudo);

@@ -42,11 +42,11 @@ class MoneyRepository
                 $money->$key = $value;
             }
             $money->save();
-
-            return ['erreur' => false, 'message' => 'Insertion dans la table Money effectué avec succès !'];
         } catch (Exception $e) {
             return ['erreur' => true, 'message' => 'Erreur lors de la mise à jour de la table Money : ' . $e->getMessage()];
         }
+        
+        return ['erreur' => false, 'message' => 'Insertion dans la table Money effectué avec succès !'];
     }
 
     /**

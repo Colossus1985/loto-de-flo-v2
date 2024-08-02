@@ -62,8 +62,8 @@
                 <tbody>
                     @foreach ($gains as $gain)
                         <tr>
-                            <td class="text-end align-middle">
-                                <span>{{ $gain->date }}</span>
+                            <td class="text-center align-middle">
+                                <span>{{ sql2display($gain->date) }}</span>
                             </td>
                             <td>{{ $gain->nameGroup }}</td>
                             <td class="text-end align-middle fw-bold">

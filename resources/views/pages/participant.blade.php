@@ -183,7 +183,7 @@
                 <tbody>
                     @foreach ($actions as $action)
                         <tr>
-                            <td class="fw-bold text-center">{{ $action->date }}</td>
+                            <td class="fw-bold text-center">{{ sql2display($action->created_at) }}</td>
 
                             @if ($action->amount < 0)
                                 <td class="text-end fw-bold bg_color-negatif text-white">
@@ -316,7 +316,7 @@
             { extend: 'pdf', footer: true }, //, exportOptions: { columns: [1,2] }}         
             { extend: 'excel', footer: true },
         ],  
-        order: [[ 0, 'desc' ]],
+        order: [],
 
         columnDefs: [
                 { type: 'formatted-num', targets: cols_number },
@@ -327,7 +327,7 @@
             var api = this.api();
             var c2  = api.column( 2, {page:'current'} ).data().sum();
             var c3  = api.column( 3, {page:'current'} ).data().sum();
-            var c2  = api.column( 4, {page:'current'} ).data().sum();
+            var c4  = api.column( 4, {page:'current'} ).data().sum();
             c2    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c2);
             c3    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c3);
             c4    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c4);

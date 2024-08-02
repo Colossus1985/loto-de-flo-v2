@@ -18,6 +18,7 @@
             <div class="modal-body">
                 <form class="d-flex flex-row" method="POST" action="{{ route('addMoney', $participant->id) }}">
                     @csrf
+                    <input name="input_pseudo" hidden readonly value="{{$participant->pseudo}}">
                     <div class="form-group form-floating mb-3 d-flex">
                         <input
                             type="number"
@@ -29,7 +30,7 @@
                             value="{{ old('inputMontant') }}"
                             placeholder="First name"
                             required
-                        />
+                        >
                         <label for="floatingMontant">Montant ➕ <span>€</span></label>
                     </div>
 

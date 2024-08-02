@@ -28,6 +28,42 @@ function ifNotZero($val, $format=false, $suffixe=null, $virgule='.', $millier=' 
 }
 
 /**
+ * Transforme une date mysql (aaaa-mm-jj HH:ii:ss) en format courant (jj/mm/aa)
+ *
+ * @param   string  date format to return
+ * @param   string  short année sur 2 caractères
+ * @param   string  time rajout de l'heure (HH:mm)
+ * @param   string  longtime rajout des secondes (HH:mm:ss) (Ajout 31/10/19)
+ */
+function sql2display($date, $short=false, $time=false, $longtime=false)
+{
+    if (empty($date))
+    {
+        return ''; //false;
+    }
+    // Format origine : aaaa-mm-jj HH:ii:ss
+    $date = str_replace('/', '-', $date); // Au cas ou yyyy/mm/dd
+    if (strlen($date)<10 || $date == '0000-00-00'){
+        return ''; //false;
+    }
+
+    $c_date = strlen($date) > 10 ? DateTime::createFromFormat('Y-m-d H:i:s', $date) : DateTime::createFromFormat('Y-m-d', $date);
+
+    $d = $short ? $c_date->format('d/m/y') : $c_date->format('d/m/Y');
+
+    $t = '';
+    if ($time) {
+        if ($longtime) {
+            $t = ' ('.$c_date->format('H:i:s').')';
+        } else {
+            $t = ' ('.$c_date->format('H:i').')';
+        }
+    }
+
+    return $d.$t;
+}
+
+/**
  * tester un input 
  * @param string valeur d'un input
  */
