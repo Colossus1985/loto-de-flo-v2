@@ -32,18 +32,11 @@ $today_month = date('m');
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    //====================== groups =============
-    <?php 
-        $labels_groups          = $chiffres_groups['labels'];
-        $datasets_groups        = $chiffres_groups['data']; 
-        $datasets_totaux_groups = $chiffres_groups['totaux']; 
-    ?>
-    
+    //====================== groups totaux =============
     const stats_groups = document.getElementById('chiffres_groups');
 
-    // Extract PHP data
-    const labels_groups = <?php echo json_encode($labels_groups); ?>;
-    const datas_groups = <?php echo json_encode($datasets_groups); ?>;
+    const labels_groups = {!! json_encode($chiffres_groups['labels']) !!};
+    const datas_groups = {!! json_encode($chiffres_groups['data']) !!};
     
     // Extract all years from the data
     const years_groups = new Set();
@@ -85,27 +78,28 @@ $today_month = date('m');
     });
 
     const totalDataElement_groups = document.getElementById('chartLegend_groups');
-    const totalData_groups = <?php echo json_encode($datasets_totaux_groups); ?>;
-    var index = 0;
+    const totalData_groups = {!! json_encode($chiffres_groups['totaux']) !!};
+    let index = 0;
 
     // Create an HTML string to display the total data for each year
-    let htmlString_groups = '<ul style="list-style: none;">';
+    let htmlString_groups = '<div class="d-flex flex-row flex-wrap">';
     for (const year in totalData_groups) {
         if (totalData_groups.hasOwnProperty(year)) {
             const value = totalData_groups[year];
             // Add a check for datasets_groups[index] existence
             if (datasets_groups[index]) {
                 const backgroundColor = datasets_groups[index].backgroundColor || 'gray';
-                htmlString_groups += `<li class='mb-2'><span class='my-2 col-12 px-2 py-1 rounded-2 text-center text-bold' style='background-color: ${backgroundColor};'>${year}:</span> ${value} €</li>`;
+                htmlString_groups += `<span class='my-2 me-3 px-2 py-1 rounded-2 text-center text-bold text-nowrap' style='background-color: ${backgroundColor};'>${year}: &nbsp;${value} €</span>`;
             }
             index++;
         }
     }
-    htmlString_groups += '</ul>';
+    htmlString_groups += '</div>';
     totalDataElement_groups.innerHTML = htmlString_groups;
 
-    //======================  Fin CA ============
+    //======================  Fin groups totaux ============
 </script>
+
 
 
 
