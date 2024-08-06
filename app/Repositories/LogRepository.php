@@ -15,49 +15,73 @@ class LogRepository
      * @param string période demandé
      * @param int nombre d'année
      */
-    public function getGroups($periode, $nb_annee)
+    public function getGroups()
     {
+        // Variables de configuration et initialisation
         $vals = array();
-  
-        // Mois pour indice depuis requete
         $months = config('commun.mois_ordo');
-        // Labels
         $vals['labels'] = config('commun.mois_label');
 
         $current = date('Y');
-        for ($an = ($current-$nb_annee)+1 ; $an <= $current; $an++) {
-            $query = Gains::select(
-                        'nameGroup',
-                        DB::raw("DATE_FORMAT(date, '%Y') as annee"),
-                        DB::raw("DATE_FORMAT(date, '%m') as mois"),
-                        DB::raw('SUM(gainIndividuel) as total_gain_mensuel')
-                    )
-                    ->whereYear('date', $an)
-                    ->groupBy('nameGroup', 'annee', 'mois')
-                    ->orderBy('annee')
-                    ->orderBy('mois')
-                    ->orderBy('nameGroup')
-                    ;
+        $pastYear = $current - 2; // Trois dernières années
 
-            $rows = $query->get()->toArray();
+        // // Récupération des données
+        // $query = Gains::select(
+        //             'nameGroup',
+        //             DB::raw("DATE_FORMAT(date, '%Y') as annee"),
+        //             DB::raw("DATE_FORMAT(date, '%m') as mois"),
+        //             DB::raw('SUM(gainIndividuel) as total_gain_mensuel')
+        //         )
+        //         ->whereYear('date', '>=', $pastYear)
+        //         ->groupBy('nameGroup', 'annee', 'mois')
+        //         ->orderBy('annee')
+        //         ->orderBy('mois')
+        //         ->orderBy('nameGroup')
+        //         ->get()
+        //         ->toArray();
 
-            // Affectation cle/valeur tableau des valeurs
-            foreach ($vals['labels'] as $label) {
-                $vals['datasets'][$an][$label]    = 0;
-            } 
+        $query = Gains::select(
+                DB::raw("DATE_FORMAT(date, '%Y') as annee"),
+                DB::raw("DATE_FORMAT(date, '%m') as mois"),
+                DB::raw('SUM(gainIndividuel) as total_gain_mensuel')
+                )
+                ->whereYear('date', '>=', $pastYear)
+                ->groupBy('annee', 'mois')
+                ->orderBy('annee')
+                ->orderBy('mois')
+                ->get()
+                ->toArray();
 
-            // Affectation des valeurs trouvées aux dates
-            $total_set = 0;
-            foreach ($rows as $row) {
-                $vals['datasets'][$an][$months[(int) $row['mois']]] = round($row['total_gain_mensuel']);
-                $total_set    += $row['total_gain_mensuel'];
-            }  
-            
-            // Affectation total/set
-            $vals['totaux'][$an] = number_format($total_set, 0, '.', ' ');
-           
+       // Initialisation des données pour le graphique et des totaux
+        $data = [];
+        $totaux = [];
+        foreach ($vals['labels'] as $label) {
+            $data[$label] = [];
         }
-        return $vals;
+
+        // Remplissage des données et calcul des totaux
+        foreach ($query as $row) {
+            $monthLabel = $months[(int) $row['mois']];
+            $annee = $row['annee'];
+            $total_gain_mensuel = round($row['total_gain_mensuel']);
+
+            // Stocker les données dans le tableau $data
+            $data[$monthLabel][$annee] = $total_gain_mensuel;
+
+            // Calcul des totaux pour chaque année
+            if (isset($totaux[$annee])) {
+                $totaux[$annee] += $total_gain_mensuel;
+            } else {
+                $totaux[$annee] = $total_gain_mensuel;
+            }
+        }
+
+        // dd(['labels' => $vals['labels'], 'data' => $data, 'totaux' => $totaux]);
+        return [
+            'labels'    => $vals['labels'],
+            'data'      => $data,
+            'totaux'    => $totaux
+        ];
     }
 
     /**
@@ -65,7 +89,7 @@ class LogRepository
      * @param string période demandé
      * @param int nombre d'année
      */
-    public function getParticipants($periode, $nb_annee)
+    public function getParticipants()
     {
         
     }

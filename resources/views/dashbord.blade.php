@@ -13,11 +13,11 @@ $today_month = date('m');
         <div class="col-md-12">
             <div class="card">
                 <div class="box-header with-border">
-                    <h3 class="box-title ml-3">Groups Joué / Gagné (€)</h3>
+                    <h3 class="box-title ml-3">Groups gagné (€)</h3>
 
                     <div class="card-body">
                         <div class="chart-container" style="position: relative; height:15rem;">
-                            <canvas id="canvas_groups"></canvas>
+                            <canvas id="chiffres_groups"></canvas>
                         </div>
                         <div id="chartLegend_groups"></div>  
                     </div>
@@ -26,79 +26,87 @@ $today_month = date('m');
             </div>
         </div>
     </div>
+
+    <div id="result"></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    window.onload = function() {
-        const labels_groups         = {!! json_encode($chiffres_groups['labels'], JSON_UNESCAPED_UNICODE) !!};
-        const datas_groups          = {!! json_encode($chiffres_groups['datasets']) !!};
-        const dataset_totaux_groups = {!! json_encode($chiffres_groups['totaux']) !!};
+    //====================== groups =============
+    <?php 
+        $labels_groups          = $chiffres_groups['labels'];
+        $datasets_groups        = $chiffres_groups['data']; 
+        $datasets_totaux_groups = $chiffres_groups['totaux']; 
+    ?>
+    
+    const stats_groups = document.getElementById('chiffres_groups');
 
-        const stats_groups      = document.getElementById('canvas_groups');
-        const years_groups      = Object.keys(datas_groups);
-        const datasets_groups   = [];
-        var label_mois_groups   = [];
+    // Extract PHP data
+    const labels_groups = <?php echo json_encode($labels_groups); ?>;
+    const datas_groups = <?php echo json_encode($datasets_groups); ?>;
+    
+    // Extract all years from the data
+    const years_groups = new Set();
+    labels_groups.forEach(month => {
+        const yearData = datas_groups[month];
+        Object.keys(yearData).forEach(year => years_groups.add(year));
+    });
+    
+    // Convert Set to array and sort
+    const yearsArray_groups = Array.from(years_groups).sort();
 
-        years_groups.forEach(year => {
-            const yearData  = datas_groups[year];
-            const data      = [];
+    // Initialize datasets for each year
+    const datasets_groups = yearsArray_groups.map((year, index) => {
+        const data = labels_groups.map(month => datas_groups[month][year] || 0);
+        return {
+            label: year,
+            data: data,
+            backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.5)`,
+            borderColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`,
+            borderWidth: 1,
+        };
+    });
 
-            for (const month in yearData) {
-                if (yearData.hasOwnProperty(month)) {
-                    if (!label_mois_groups.includes(month)) {
-                        label_mois_groups.push(month);
-                    }
-                    const value = yearData[month];
-                    data.push(value);
+    new Chart(stats_groups, {
+        type: 'line',
+        data: {
+            labels: labels_groups,
+            datasets: datasets_groups
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
                 }
-            }
-
-            datasets_groups.push({
-                label: year,
-                data: data,
-                borderWidth: 2,
-                // backgroundColor and borderColor could be defined here for each dataset
-            });
-        });
-
-        if (stats_groups) {
-            new Chart(stats_groups, {
-                type: 'bar',
-                data: {
-                    labels: label_mois_groups,
-                    datasets: datasets_groups
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    },
-                }
-            });
-        } else {
-            console.error("L'élément canvas avec l'ID 'groups' n'a pas été trouvé.");
+            },
         }
+    });
 
+    const totalDataElement_groups = document.getElementById('chartLegend_groups');
+    const totalData_groups = <?php echo json_encode($datasets_totaux_groups); ?>;
+    var index = 0;
 
-        const totalDataElement_groups = document.getElementById('chartLegend_groups');
-        const totalData_groups = dataset_totaux_groups;
-        var index = 0;
-
-        let htmlString_groups = '<ul style="list-style: none;">';
-        for (const year in totalData_groups) {
-            if (totalData_groups.hasOwnProperty(year)) {
-                const value = totalData_groups[year];
-                htmlString_groups += `<li class='mb-2'><span class='my-2 col-12 px-2 py-1 rounded-2 text-center text-bold' style='background-color: ` + (datasets_groups[index].backgroundColor || 'defaultColor') + `;'>${year}:</span> ${value} €</li>`;
-                index++;
+    // Create an HTML string to display the total data for each year
+    let htmlString_groups = '<ul style="list-style: none;">';
+    for (const year in totalData_groups) {
+        if (totalData_groups.hasOwnProperty(year)) {
+            const value = totalData_groups[year];
+            // Add a check for datasets_groups[index] existence
+            if (datasets_groups[index]) {
+                const backgroundColor = datasets_groups[index].backgroundColor || 'gray';
+                htmlString_groups += `<li class='mb-2'><span class='my-2 col-12 px-2 py-1 rounded-2 text-center text-bold' style='background-color: ${backgroundColor};'>${year}:</span> ${value} €</li>`;
             }
+            index++;
         }
-        htmlString_groups += '</ul>';
-        totalDataElement_groups.innerHTML = htmlString_groups;
     }
+    htmlString_groups += '</ul>';
+    totalDataElement_groups.innerHTML = htmlString_groups;
+
+    //======================  Fin CA ============
 </script>
+
 
 
 
