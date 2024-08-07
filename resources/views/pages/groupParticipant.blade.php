@@ -10,7 +10,10 @@
     }
 </style>
 
-<div class="p-5">
+<div class="p-4">
+    <div>
+        <h3 class="mt-3">Gérer les groupes</h3>
+    </div>
     <div class="d-flex">
         <div class="my-3 me-3">
             <div class="btn-group">

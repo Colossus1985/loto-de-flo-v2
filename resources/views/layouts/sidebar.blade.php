@@ -6,8 +6,14 @@ $local = stripos($_SERVER['HTTP_HOST'], 'localhost')!==false ? true : false;
 $user_ok = $local ? true : $user_ok;
 ?>
 
+<style>
+    .main-sidebar__{
+        background-color: #0083ff;
+        color: #ffffff;
+    }
+</style>
 <!-- Main Sidebar Container -->
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
+<aside class="main-sidebar sidebar-dark-info elevation-4">
     <!-- Brand Logo -->
     <a href="/" class="ps-3 brand-link">
       <img src="{{asset('img/logo-dl-rs.png')}}" alt="Digilife" class="brand-image img-circle elevation-3">

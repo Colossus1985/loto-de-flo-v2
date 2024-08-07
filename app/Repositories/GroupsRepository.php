@@ -17,13 +17,17 @@ class GroupsRepository
 {
     /**
      * récupérer tous les groups
-     * @param Collection des groups
+     * @param string champ actif
+     * @param bool champ condition
+     * @param bool récupérer tous les groups
+     * @return Collection des groups
      */
-    public function getGroups()
+    public function getGroups($champ = 'actif', $bool = 1, $tous = false)
     {
-        $query = Groups::query()
-            ->where('actif', 1)
-            ;
+        $query = Groups::query();
+        if (!$tous) {
+            $query = $query->where($champ, $bool);
+        }
         $res = $query->get();
 
         return $res;

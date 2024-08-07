@@ -2,6 +2,9 @@
 @section('content')
 
 <div class="container">
+    <div>
+        <h3 class="p-3">Ajouter un participant</h3>
+    </div>
     <form method="POST" action="{{ route('addParticipant') }}">
         @csrf
         <div class="form-group form-floating mb-3 d-flex">

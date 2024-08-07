@@ -33,3 +33,5 @@ Route::post('group/participantGroup'                            , [groupsControl
 Route::get('group/delete/{id_group}'                            , [groupsController::class, 'groupDelete'])                 ->name('groupDelete');
 Route::get('group/rallume/{id_group}'                           , [groupsController::class, 'groupRallume'])                ->name('groupRallume');
 
+Route::get('log/get-group-data/{name_groupe}'                   , [logController::class, 'getGroupData']);
+

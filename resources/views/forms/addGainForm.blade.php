@@ -18,8 +18,8 @@
 </style>
 
 <div class="p-5">
-    <div class="d-flex flex-row">
-        <h3>Ajouter un Gain</h3>
+    <div class="d-flex flex-row mb-3">
+        <h3>Ajouter un Gain 🥳🥳🥳🥳🥳🥳🥳🥳</h3>
     </div>
     <div class="modal-body">
         <form method="POST" action="{{ route('addGain') }}">

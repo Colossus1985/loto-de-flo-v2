@@ -15,6 +15,10 @@ class logController extends Controller
             $this->groups   = $groups;
         }
 
+    /**
+     * page principale
+     * affichage de statistiques
+     */
     public function dashbord()
     {
         $groups                 = $this->groups->getGroups();
@@ -25,6 +29,26 @@ class logController extends Controller
         return view('dashbord', [
             'chiffres_groups'       => $chiffres_groups,
             'chiffres_participants' => $chiffres_participants,
+            'groups'                => $groups,
         ]);
     }
+
+    /**
+     * récupération des stats par groupe en détail
+     * appelé par javascript
+     * @param string nom du groupe
+     * @return string json détails gain du groupe
+     */
+    public function getGroupData($group_name)
+    {
+        $res = $this->log->getGroupData($group_name);
+        // dd($res);
+        // dd($res['group_name']);
+        // $res = $res['data'];
+        return response()->json($res);
+    }
+
+
+
+
 }

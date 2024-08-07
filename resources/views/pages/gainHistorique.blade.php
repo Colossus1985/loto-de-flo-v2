@@ -28,7 +28,7 @@
     <div class="mt-0">
         <div class="d-flex flex-row justify-content-between mb-3">
             <div class="d-flex flex-row">
-                <h2>🥳🥳🥳🥳🥳🥳🥳🥳🥳🥳🥳🥳</h2>
+                <h2>Historique des gains 🥳🥳🥳🥳🥳🥳🥳🥳🥳</h2>
             </div>
             <div>
                 <button type="button" class="btn btn-light py-0 d-flex align-items-center border border-3" data-bs-toggle="modal" data-bs-target="#modalAddGain">

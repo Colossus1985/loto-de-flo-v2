@@ -10,9 +10,9 @@
     .bg_color-super {background-color: rgba(116, 255, 91, 0.541) !important;}
 </style>
 
-<div class="p-5">
-    <div class="mb-3">
-        <h2>Liste des Participants</h2>
+<div class="p-4">
+    <div>
+        <h3 class="p-3">Les participants</h3>
     </div>
     <div class="box-body table-responsive">
         <table id="table_participants" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>

@@ -1,9 +1,9 @@
 @extends('layouts.main')
 @section('content')
 
-<div class="p-5">
-    <div class="mb-3">
-        <h2>Miser pour jouer</h2>
+<div class="p-4">
+    <div>
+        <h3 class="p-3">Jouons !!!</h3>
     </div>
     <form method="POST" action="{{ route('debitAll') }}">
         @csrf
