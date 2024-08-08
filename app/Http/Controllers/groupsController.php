@@ -114,13 +114,14 @@ class groupsController extends Controller
         foreach ($group as $data) {
             $group_ids[]    = $data->id;
             $group_names[]  = $data->nameGroup;
+            $res = $this->money->historique_exist($data->id, $data->nameGroup, $id_participant);
         }
         $group_ids_json     = json_encode($group_ids);
         $group_names_json   = json_encode($group_names);
 
         $champs = [
-            'groupID'   => $group_ids_json,
-            'nameGroup' => $group_names_json,
+            'group_id'      => $group_ids_json,
+            'nameGroup'     => $group_names_json,
         ];
 
         $res_update_participant = $this->participant->updateParticipant($champs, $id_participant);

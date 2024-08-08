@@ -95,12 +95,15 @@
                         </td>
 
                         <td 
-                            @if ($participant->totalAmount == '' || $participant->totalAmount == 0)
+                            @php 
+                                $jouee = $participant->totalAmount - $participant->amount
+                            @endphp
+                            @if ($jouee == 0)
                                 class="align-middle text-end fw-bold">
                                     0.00 €
                             @else 
                                 class="align-middle text-end fw-bold">
-                                    {{ ifNotZero($participant->totalAmount, true, ' €', '.', ' ') }}
+                                    {{ ifNotZero($jouee, true, ' €', '.', ' ') }}
                             @endif
                         </td>
 

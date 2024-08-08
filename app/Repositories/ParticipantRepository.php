@@ -158,4 +158,89 @@ class ParticipantRepository
         return ['erreur' => false, 'message' => 'Participant mis à jour avec succès !'];
     }
 
+
+    //=== migration -> v3 réunification des pseudo
+    public function unificationPseudo()
+    {
+        //=== récupération du group_id et transformation de group_id et nameGroup en json
+        // $lines2json = Participants::query()->get();
+        // foreach ($lines2json as $data) {
+        //     if ($data->nameGroup) {
+        //         $group = Groups::query()
+        //             ->where('nameGroup', $data->nameGroup)
+        //             ->first();
+        //         $query = Participants::query()
+        //             ->where('id', $data->id)
+        //             ;
+        //         $query->update([
+        //             'nameGroup' => json_encode([$data->nameGroup]),
+        //             'group_id' => json_encode([$group->id]),
+        //         ]);
+        //     }
+        // }
+        
+        //=== réunification des peudos
+        $flo = Participants::query()->where('pseudo', 'like', 'Flo%')->get();
+        $gg = Participants::query()->where('pseudo', 'like', 'GG%')->get();
+        $andjou = Participants::query()->where('pseudo', 'like', 'Andjou%')->get();
+        $Marijo = Participants::query()->where('pseudo', 'like', 'Marijo%')->get();
+        $Rom1 = Participants::query()->where('pseudo', 'like', 'Rom1%')->get();
+        $Thalie = Participants::query()->where('pseudo', 'like', 'Thalie%')->get();
+        $Nico = Participants::query()->where('pseudo', 'like', 'Nico%')->get();
+
+        $this->action($flo, 'Flo', 'Flo', 3);
+        $this->action($gg, 'GG', 'GGBE', 12);
+        $this->action($andjou, 'Andjou', 'AndjouBE', 9);
+        $this->action($Marijo, 'Marijo', 'Marijo', 4);
+        $this->action($Rom1, 'Rom1', 'Rom1BL', 22);
+        $this->action($Thalie, 'Thalie', 'ThalieBE', 24);
+        $this->action($Nico, 'Nico', 'NicoBE', 13);
+
+        return true;
+    }
+
+    public function action($participant, $pseudo_fin, $pseudo_origin, $id_pseudo_unique)
+    {
+        // $sum_amount         = 0;
+        // $sum_totalAmount    = 0;
+        // $array_group_id     = [];
+        // $array_group_name   = [];
+        // foreach ($participant as $data) {
+        //     $sum_amount         = $sum_amount + $data->amount;
+        //     $sum_totalAmount    = $sum_totalAmount + $data->totalAmount;
+        //     if ($data->group_id) {
+        //         $array_group_id     = array_merge($array_group_id, json_decode($data->group_id));
+        //         $array_group_name   = array_merge($array_group_name, json_decode($data->nameGroup));
+        //     }
+        // }
+
+        // $array_group_id     = json_encode($array_group_id);
+        // $array_group_name   = json_encode($array_group_name);
+
+        // $champs_participants = [
+        //     'pseudo'        => $pseudo_fin,
+        //     'group_id'      => $array_group_id,
+        //     'nameGroup'     => $array_group_name,
+        //     'amount'        => $sum_amount,
+        //     'totalAmount'   => $sum_totalAmount,
+        // ];
+
+        // $query = Participants::query()
+        //     ->where('pseudo', $pseudo_origin)
+        //     ;
+        // $query->update($champs_participants);
+
+        //=== maj table money ======================================
+        $champs_money = [
+            'pseudo'    => $pseudo_fin,
+            'id_pseudo' => $id_pseudo_unique,
+        ];
+        // dd($champs_money);
+        $query = Money::query()
+            ->where('pseudo', 'like', "$pseudo_fin%")
+            ;
+        $query->update($champs_money);
+
+    }
+
 }

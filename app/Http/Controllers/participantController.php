@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Participants;
 use App\Repositories\ParticipantRepository;
 use App\Repositories\GroupsRepository;
 use App\Repositories\MoneyRepository;
@@ -31,14 +32,52 @@ class participantController extends Controller
         $participant        = $this->participant->getParticipant('id', $id_participant, $actif);
         $money              = $this->money->getMoney('id_pseudo', $id_participant);
         $groups             = $this->groups->getGroups();
-        $participant_groups = json_decode($participant->nameGroup);
-        if (!$participant_groups) { $participant_groups = []; }
 
-        // dd($participant);
+        $participant_groups = json_decode($participant->nameGroup);
+        if (!$participant_groups) { 
+            $participant_groups = []; 
+        }
+
+        //=== si le participant n'a plus d'apartenance à un group on affiche plus les totaux
+        $sommes = [];
+        if ($money[0]->group_name) {
+            $array_groups_id = json_decode($participant->group_id);
+            foreach ($money as $data) {
+                //=== on vérifie si le participant est associé encore au groupe
+                if (in_array($data->id_group, $array_groups_id)) {
+                    $group_name = $data->group_name;
+                
+                    $totale_value       = $data->credit + $data->creditGain - $data->debit;
+                    $value_credit       = $data->credit;
+                    $value_debit        = $data->debit;
+                    $value_credit_gain  = $data->creditGain;
+                    
+                    // Si le group_name n'existe pas encore dans le tableau, l'initialiser
+                    if (!isset($sommes[$group_name])) {
+                        $sommes[$group_name] = [
+                            'value_totale'      => 0,
+                            'value_credit'      => 0,
+                            'value_debit'       => 0,
+                            'value_credit_gain' => 0,
+                        ];
+                    }
+                    
+                    // Ajouter la valeur au total pour ce group_name
+                    $sommes[$group_name]['value_totale']        += $totale_value;
+                    $sommes[$group_name]['value_credit']        += $value_credit;
+                    $sommes[$group_name]['value_debit']         += $value_debit;
+                    $sommes[$group_name]['value_credit_gain']   += $value_credit_gain;
+                    $sommes[$group_name]['group_name']          = $group_name;
+                }
+                
+            }
+        }
+        
         return view('pages.participant', [
             'actions'               => $money, 
             'participant_groups'    => $participant_groups,
             'participant'           => $participant,
+            'sommes'                => $sommes,
             'groups'                => $groups
             ]
         );
@@ -127,18 +166,17 @@ class participantController extends Controller
         $participant = $this->participant->getParticipant('id', $id_articipant);
         $champs = [
             'actif'     => 0,
-            'nameGroup' => null,
-            'groupID'   => null,
+            'nameGroup' => [],
+            'group_id'   => [],
         ];
         $res_maj_participant = $this->participant->updateParticipant($champs, $id_articipant);
         if ($res_maj_participant['erreur']) {
             return redirect()->back()
                 ->with('erreur', $res_maj_participant['message']);
         }
-        $pseudo = $participant->pseudo;
 
         return redirect()->route('participants')
-                ->with('success', $pseudo.' a été srendu avec succès!');
+                ->with('success', $participant->pseudo.' a été rendu inactif(ve) avec succès!');
 
     }
 
@@ -192,6 +230,15 @@ class participantController extends Controller
 
         return redirect()->back()
             ->with('success', $res_update_participant['message']);
+    }
+
+    //=== migration -> v3 réunification des pseudo
+    public function unificationPseudo()
+    {
+        $res = $this->participant->unificationPseudo();
+        if ($res) {
+            return response()->json('fini');
+        }
     }
 
 }

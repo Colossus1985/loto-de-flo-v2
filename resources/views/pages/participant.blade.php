@@ -8,17 +8,21 @@
     .bg_color-limit {background-color: rgba(255, 122, 122, 0.541) !important;}
     .bg_color-ok {background-color: rgba(255, 209, 71, 0.541) !important;}
     .bg_color-super {background-color: rgba(116, 255, 91, 0.541) !important;}
+    .bg_color-groups {background-color: rgba(146, 210, 252, 0.541) !important;}
     .visible_non {opacity: 0;}
 </style>
 
 <div class="p-5 fw-bold">
     <div>
-        <h3 class="mb-3">{{ $participant->pseudo }} ({{ $participant->firstName }} {{ $participant->firstName }})</h3>
+        <h3 class="mb-3 @if (!$participant->actif) bg_color-negatif p-3 @endif ">
+            {{ $participant->pseudo }} ({{ $participant->firstName }} {{ $participant->firstName }}) 
+            @if (!$participant->actif) <span>NON ACTIF(VE)</span> @endif
+        </h3>
     </div>
-    <div class="d-flex">
+    <div class="d-flex flex-wrap">
         <div class="my-3 me-3">
             <div class="btn-group">
-                <button type="button" data-toggle="collapse" data-target="#details_Collapse" aria-expanded="false" aria-controls="attenteCollapse" class="btn btn-info">
+                <button type="button" data-toggle="collapse" data-target="#details_Collapse" aria-expanded="false" aria-controls="attenteCollapse" class="btn btn-info text-nowrap">
                     Détails personnelles
                 </button>
             </div>
@@ -26,7 +30,7 @@
 
         <div class="my-3 me-3">
             <div class="btn-group">
-                <button type="button" data-toggle="collapse" data-target="#historique_Collapse" aria-expanded="true" aria-controls="attenteCollapse" class="btn btn-info">
+                <button type="button" data-toggle="collapse" data-target="#historique_Collapse" aria-expanded="true" aria-controls="attenteCollapse" class="btn btn-info text-nowrap">
                     Historique monétaire
                 </button>
             </div>
@@ -38,17 +42,17 @@
                     <form action="{{ route('participantDelete', $participant->id) }}" method="get">
                         @csrf
                         <div class="">
-                            <button type="submit" class="btn btn-danger"
-                                onclick="return confirm('Veux tu vraiment supprimer {{ $participant->pseudo }} ?');">Supprimer {{$participant->pseudo}}
+                            <button type="submit" class="btn btn-danger text-nowrap"
+                                onclick="return confirm('Veux tu vraiment rendre inactif(ve) {{ $participant->pseudo }} ?');">Supprimer {{$participant->pseudo}}
                             </button>
                         </div>
                     </form>
-                @else {{ route('participantActiver', $participant->id) }}
+                @else
                     <form action="{{ route('participantActiver', $participant->id) }}" method="get">
                         @csrf
                         <div class="">
-                            <button type="submit" class="btn btn-success"
-                                onclick="return confirm('Veux tu vraiment annuler la suppression de {{ $participant->pseudo }} ?');">Rendre actif(ve) {{$participant->pseudo}}
+                            <button type="submit" class="btn btn-success text-nowrap"
+                                onclick="return confirm('Veux tu vraiment rendre actif(ve) {{ $participant->pseudo }} ?');">Rendre actif(ve) {{$participant->pseudo}}
                             </button>
                         </div>
                     </form>
@@ -129,13 +133,13 @@
                 <div class="form-group form-floating mb-3 me-3">
                     <input id="floatingAmount_dispo" class="form-control text-end fw-bold"
                         value="{{ $participant->amount }} €" readonly>
-                    <label for="floatingAmount_dispo" class="text-nowrap">Disponible</label>
+                    <label for="floatingAmount_dispo" class="text-nowrap">Fonds globaux</label>
                 </div>
 
                 <div class="form-group form-floating mb-3 me-3">
                     <input id="floatingAmount_joue" class="form-control text-end fw-bold"
-                        value="{{ $participant->totalAmount }} €" readonly>
-                    <label for="floatingAmount_joue" class="text-nowrap">Joué</label>
+                        value="{{ $participant->totalAmount - $participant->amount }} €" readonly>
+                    <label for="floatingAmount_joue" class="text-nowrap">Mises en jeu globale</label>
                 </div>
                 
                 <div class="form-group form-floating flex-fill d-flex mb-3">
@@ -145,30 +149,47 @@
             </div>
         </form>
 
-        <form action="{{ route('changeGroup', $participant->id) }}" method = "POST">
-            @csrf
+        @if ($participant->actif)
+            <form action="{{ route('changeGroup', $participant->id) }}" method = "POST">
+                @csrf
+                <div class="border border-3 rounded-3 d-flex flex-column  ps-3 py-2 mb-3">
+                    <div class="">
+                        <p class="mt-1 mb-2 text-nowrap">Changer le Groupe : </p>
+                    </div>
+                    <div class="d-flex flex-row text-nowrap flex-wrap flex-fill">
+                        @foreach ($groups as $i => $group)
+                            <div class="ms-1 form-check me-3">
+                                <input class="form-check-input me-2"
+                                    type="checkbox" 
+                                    name="inputNameGroupNew[]" 
+                                    id="flexSwitchNameGroup_{{$i}}" 
+                                    value="{{ $group->nameGroup }}">
+                                <label class="form-check-label text-nowrap" for="flexSwitchNameGroup_{{$i}}">{{ $group->nameGroup }}</label>
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="form-group form-floating d-flex mt-3 d-flex flex-wrap">
+                        <button type="submit" class="btn btn-primary text-nowrap me-3 mb-3 mb-xs-0 flex-fill">Changer groupe</button>
+                        <a href="{{ route('participantGroupDelete', $participant->id) }}" class="flex-fill btn btn-danger text-nowrap me-3 mb-3">Enlever de tous les groupes</a>
+                    </div>
+                </div>
+            </form>
+        @else
             <div class="border border-3 rounded-3 d-flex flex-column  ps-3 py-2 mb-3">
-                <div class="">
-                    <p class="mt-1 mb-2 text-nowrap">Changer le Groupe : </p>
-                </div>
-                <div class="d-flex flex-row text-nowrap flex-wrap flex-fill">
-                    @foreach ($groups as $i => $group)
-                        <div class="ms-1 form-check me-3">
-                            <input class="form-check-input me-2"
-                                type="checkbox" 
-                                name="inputNameGroupNew[]" 
-                                id="flexSwitchNameGroup_{{$i}}" 
-                                value="{{ $group->nameGroup }}">
-                            <label class="form-check-label text-nowrap" for="flexSwitchNameGroup_{{$i}}">{{ $group->nameGroup }}</label>
+                <p>Avant d'associer {{ $participant->pseudo }} à un groupe il faut la rendre actif(ve) !</p>
+                <div>
+                    <form action="{{ route('participantActiver', $participant->id) }}" method="get">
+                        @csrf
+                        <div class="">
+                            <button type="submit" class="btn btn-success"
+                                onclick="return confirm('Veux tu vraiment annuler la suppression de {{ $participant->pseudo }} ?');">Rendre actif(ve) {{$participant->pseudo}}
+                            </button>
                         </div>
-                    @endforeach
-                </div>
-                <div class="form-group form-floating d-flex mt-3 d-flex flex-wrap">
-                    <button type="submit" class="btn btn-primary text-nowrap me-3 mb-3 mb-xs-0 flex-fill">Changer groupe</button>
-                    <a href="{{ route('participantGroupDelete', $participant->id) }}" class="flex-fill btn btn-danger text-nowrap me-3 mb-3">Enlever de tous les groupes</a>
+                    </form>     
                 </div>
             </div>
-        </form>
+        @endif
+
     </div>
 
     <hr class="my-4"></hr>
@@ -178,92 +199,122 @@
             <div class="mb-3">
                 <h4>Historique des mouvement monetaire</h4>
             </div>
-            <table id="table_participant" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>
-                <thead>
-                    <tr>
-                        <th class="text-center">Date</th>
-                        <th class="text-center">Groupe</th>
-                        <th class="text-center">Montant</th>
-                        <th class="text-center">Credit</th>
-                        <th class="text-center">Debit</th>
-                        <th class="text-center">Credit Gain</th>
-                    </tr>
-                    <tr class="filterrow">
-                        <th></th>
-                        <th class="select-filter">
-                            <select id="s1-filter" placeholder="Recherche" style="width: 100%; height:1.7rem;">
-                                <option value="">Tous</option>
-                            </select>
-                        </th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($actions as $action)
-                        <tr>
-                            <td class="fw-bold text-center">{{ sql2display($action->created_at) }}</td>
-                            <td class="fw-bold text-center">{{ $action->group_name }}</td>
-
-                            @if ($action->amount < 0)
-                                <td class="text-end fw-bold bg_color-negatif text-white">
-                                    {{ ifNotZero($action->amount, true, ' €', '.', ' ') }}
-                                </td>
-                            @elseif ($action->amount == 0.00 || $action->amount == null)
-                                <td class="text-end fw-bold bg_color-null">
-                                    0.00 €
-                                </td>
-                            @elseif ($action->amount >= 0.01 && $action->amount <= 3.49 )
-                                <td class="text-end fw-bold bg_color-limit">
-                                    {{ ifNotZero($action->amount, true, ' €', '.', ' ') }}
-                                </td>
-                            @elseif ($action->amount >= 3.50 && $action->amount <= 9.99)
-                                <td class="text-end fw-bold bg_color-ok">
-                                    {{ ifNotZero($action->amount, true, ' €', '.', ' ') }}
-                                </td>
-                            @elseif ($action->amount >= 10.00)
-                                <td class="text-end fw-bold bg_color-super">
-                                    {{ ifNotZero($action->amount, true, ' €', '.', ' ') }}
-                                </td>
-                            @endif
-                            
-                            @if ( $action->credit >= 0.01 )
-                                <td class="bg_color-super text-end fw-bold" >{{ ifNotZero($action->credit, true, ' €', '.', ' ') }}</td>
-                            @else
-                                <td class="text-end fw-bold visible_non">0.00 €</td>
-                            @endif
-
-                            @if ( $action->debit >= 0.01 )
-                                <td class="bg_color-limit text-end fw-bold">{{ ifNotZero($action->debit, true, ' €', '.', ' ') }}</td>
-                            @else
-                                <td class="text-end fw-bold visible_non">0.00 €</td>
-                            @endif
-
-                            @if ( $action->creditGain >= 0.01 )
-                                <td class="bg_color-super text-end fw-bold">{{ ifNotZero($action->creditGain, true, ' €', '.', ' ') }}</td>
-                            @else
-                                <td class="text-end fw-bold visible_non">0.00 €</td>
-                            @endif
-                        </tr>
+            @if ($sommes)
+                <div class="mb-3 d-flex flex-wrap">
+                    @foreach ( $sommes as $i => $data)
+                        <div class="d-flex flex-column flex-wrap flex-fill ps-3 border rounded bg_color-groups p-1 mb-3">
+                            <div>
+                                <h5>{{ $data['group_name'] }}</h5>
+                            </div>
+                            <div class="d-flex flex-row flex-wrap flex-fill">
+                                <div class="row form-group form-floating mb-3 me-3 flex-fill">
+                                    <input id="dispo_{{ $i }}" 
+                                        @if ($data['value_totale'] < 0)
+                                            class="text-end fw-bold bg_color-negatif text-white form-control text-end fw-bold"
+                                            value="{{ ifNotZero($data['value_totale'], true, ' €', '.', ' ') }}"
+                                        @elseif ($data['value_totale'] == 0.00 || $data['value_totale'] == null)
+                                            class="text-end fw-bold bg_color-null form-control text-end fw-bold"
+                                            value="0.00 €"
+                                        @elseif ($data['value_totale'] >= 0.01 && $data['value_totale'] <= 3.49 )
+                                            class="text-end fw-bold bg_color-limit form-control text-end fw-bold"
+                                            value="{{ ifNotZero($data['value_totale'], true, ' €', '.', ' ') }}"
+                                        @elseif ($data['value_totale'] >= 3.50 && $data['value_totale'] <= 9.99)
+                                            class="text-end fw-bold bg_color-ok form-control text-end fw-bold"
+                                            value="{{ ifNotZero($data['value_totale'], true, ' €', '.', ' ') }}"
+                                        @else
+                                            class="text-end fw-bold bg_color-super form-control text-end fw-bold"
+                                            value="{{ ifNotZero($data['value_totale'], true, ' €', '.', ' ') }}"
+                                        @endif
+                                        readonly
+                                    >
+                                    <label for="dispo_{{ $i }}" class="text-nowrap">Fonds dipso</label>
+                                </div>
+                                <div class="form-group form-floating mb-3 me-3 flex-fill">
+                                    <input id="credit_{{ $i }}" class="form-control text-end fw-bold"
+                                        value="{{ $data['value_credit'] }} €" readonly>
+                                    <label for="credit_{{ $i }}" class="text-nowrap">Crédit total</label>
+                                </div>
+                                <div class="form-group form-floating mb-3 me-3 flex-fill">
+                                    <input id="debit_{{ $i }}" class="form-control text-end fw-bold"
+                                        value="{{ $data['value_debit'] }} €" readonly>
+                                    <label for="debit_{{ $i }}" class="text-nowrap">Débit total</label>
+                                </div>
+                                <div class="form-group form-floating mb-3 flex-fill">
+                                    <input id="credit_gain_{{ $i }}" class="form-control text-end fw-bold"
+                                        value="{{ $data['value_credit_gain'] }} €" readonly>
+                                    <label for="credit_gain_{{ $i }}" class="text-nowrap">Gains globaux</label>
+                                </div>
+                            </div>
+                        </div>
                     @endforeach
-                </tbody>
-                <tfoot>
-                    <tr id="tot-gen">
-                        <th colspan="3"><h4>Totaux page</h4></th>
-                        <th class="text-right"><h4 id="c2"></h4></th>
-                        <th class="text-right"><h4 id="c3"></h4></th>
-                        <th class="text-right"><h4 id="c4"></h4></th>
-                    </tr>                            
-                    <tr>
-                        <th colspan="3"><h4>Totaux généraux</h4></th>
-                        <th class="text-right"><h4 id="t2"></h4></th>
-                        <th class="text-right"><h4 id="t3"></h4></th>
-                        <th class="text-right"><h4 id="t4"></h4></th>
-                    </tr>
-                </tfoot>
-            </table>
+                </div>
+            @endif
+
+            <div class="bg-light rounded p-3">
+                <table id="table_participant" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>
+                    <thead>
+                        <tr>
+                            <th class="text-center">Date</th>
+                            <th class="text-center">Groupe</th>
+                            <th class="text-center">Credit</th>
+                            <th class="text-center">Debit</th>
+                            <th class="text-center">Credit Gain</th>
+                        </tr>
+                        <tr class="filterrow">
+                            <th></th>
+                            <th class="select-filter">
+                                <select id="s1-filter" placeholder="Recherche" style="width: 100%; height:1.7rem;">
+                                    <option value="">Tous</option>
+                                </select>
+                            </th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($actions as $action)
+                            <tr>
+                                <td class="fw-bold text-center">{{ sql2display($action->created_at) }}</td>
+                                <td class="fw-bold text-center">{{ $action->group_name }}</td>
+                                
+                                @if ( $action->credit >= 0.01 )
+                                    <td class="bg_color-super text-end fw-bold" >{{ ifNotZero($action->credit, true, ' €', '.', ' ') }}</td>
+                                @else
+                                    <td class="text-end fw-bold visible_non">0.00 €</td>
+                                @endif
+
+                                @if ( $action->debit >= 0.01 )
+                                    <td class="bg_color-limit text-end fw-bold">{{ ifNotZero($action->debit, true, ' €', '.', ' ') }}</td>
+                                @else
+                                    <td class="text-end fw-bold visible_non">0.00 €</td>
+                                @endif
+
+                                @if ( $action->creditGain >= 0.01 )
+                                    <td class="bg_color-super text-end fw-bold">{{ ifNotZero($action->creditGain, true, ' €', '.', ' ') }}</td>
+                                @else
+                                    <td class="text-end fw-bold visible_non">0.00 €</td>
+                                @endif
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr id="tot-gen">
+                            <th colspan="2"><h4>Totaux page</h4></th>
+                            <th class="text-right"><h4 id="c2"></h4></th>
+                            <th class="text-right"><h4 id="c3"></h4></th>
+                            <th class="text-right"><h4 id="c4"></h4></th>
+                        </tr>                            
+                        <tr>
+                            <th colspan="2"><h4>Totaux généraux</h4></th>
+                            <th class="text-right"><h4 id="t2"></h4></th>
+                            <th class="text-right"><h4 id="t3"></h4></th>
+                            <th class="text-right"><h4 id="t4"></h4></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
         </div>
     </div>
 
@@ -276,7 +327,7 @@
     // $.fn.dataTable.moment( 'DD/MM/YY HH:mm:ss' );
     // $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );
     ///////////////////////////////////////
-    var cols_number = [2, 3, 4, 5];
+    var cols_number = [2, 3, 4];
     var table = $("#table_participant").DataTable({
         language: {
             "sProcessing": "Traitement en cours...",
@@ -321,18 +372,18 @@
         // Totaux
         drawCallback: function () {
             var api = this.api();
-            var c2  = api.column( 3, {page:'current'} ).data().sum();
-            var c3  = api.column( 4, {page:'current'} ).data().sum();
-            var c4  = api.column( 5, {page:'current'} ).data().sum();
+            var c2  = api.column( 2, {page:'current'} ).data().sum();
+            var c3  = api.column( 3, {page:'current'} ).data().sum();
+            var c4  = api.column( 4, {page:'current'} ).data().sum();
             c2    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c2);
             c3    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c3);
             c4    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c4);
             $("#c2").html(c2);
             $("#c3").html(c3);
             $("#c4").html(c4);
-            var t2 = api.column( 3, {filter: 'applied'} ).data().sum();
-            var t3 = api.column( 4, {filter: 'applied'} ).data().sum();
-            var t4 = api.column( 5, {filter: 'applied'} ).data().sum();
+            var t2 = api.column( 2, {filter: 'applied'} ).data().sum();
+            var t3 = api.column( 3, {filter: 'applied'} ).data().sum();
+            var t4 = api.column( 4, {filter: 'applied'} ).data().sum();
             t2    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t2);
             t3    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t3);
             t4    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t4);

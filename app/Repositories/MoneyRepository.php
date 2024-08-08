@@ -50,6 +50,45 @@ class MoneyRepository
     }
 
     /**
+     * Vérifie si un enregistrement existe dans la table Money
+     * pour un participant et un groupe donnés.
+     *
+     * @param int $id_group L'identifiant du groupe.
+     * @param int $id_participant L'identifiant du participant.
+     * @param string nom du groupe.
+     * @return bool True si l'enregistrement existe, false sinon.
+     */
+    public function historique_exist($id_group, $name_group, $id_participant)
+    {
+        // Construire la requête pour vérifier l'existence d'un enregistrement
+        $query = Money::query()
+            ->where('id_pseudo', $id_participant)
+            ->where('id_group', $id_group);
+        
+        // Vérifier si l'enregistrement existe
+        $hist_exist = $query->exists();
+
+        if (!$hist_exist) {
+            $pseudo = Participants::query()
+                ->select('pseudo')
+                ->where('id', $id_participant)
+                ->first();
+            $champs = [
+                'date'          => now()->format('Y-m-d'),
+                'id_pseudo'     => $id_participant,
+                'pseudo'        => $pseudo->pseudo,
+                'id_group'      => $id_group,
+                'group_name'    => $name_group,
+            ];
+            // dd($champs);
+            $this->insertMoney($champs);
+        }
+        
+        // Retourner le résultat
+        return $hist_exist;
+    }
+
+    /**
      * récupérer le fond des groups
      */
     public function fonds($groups)
