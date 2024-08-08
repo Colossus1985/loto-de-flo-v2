@@ -36,15 +36,15 @@ class GroupsRepository
     /**
      * récupérer un groupe en particulier
      * @param string nom de la colonne
-     * @param string valeur du champs
-     * @param collection du groupe
+     * @param array valeurs du champs
+     * @return collection du groupe
      */
     public function getGroup($champ, $valeur)
     {
         $query = Groups::query()
             ->whereIn($champ, $valeur)
             ;
-        $res = $query->get();
+        $res = $query->first();
 
         return $res;
     }

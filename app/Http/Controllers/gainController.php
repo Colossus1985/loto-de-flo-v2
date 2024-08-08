@@ -48,7 +48,13 @@ class gainController extends Controller
                 ->with('error', 'Indiquez le groupe gagniant, s\'il vous plait');
         }
 
-        $arrayParticipantWin = $this->participant->getParticipants('nameGroup', $nameGroup);
+        $arrayParticipantWin = $this->participant->getParticipants();
+        $arrayParticipantWin = collect($arrayParticipantWin)->filter(function ($participant) use ($nameGroup) {
+            //=== Décoder le JSON contenu dans le champ nameGroup
+            $groupNames = json_decode($participant->nameGroup, true);
+            //=== Vérifier si le nom recherché se trouve dans le tableau décodé
+            return is_array($groupNames) && in_array($nameGroup, $groupNames);
+        });
 
         $gainValue = $request->inputAmount;
         $nbPersonnes = count($arrayParticipantWin);
@@ -70,13 +76,14 @@ class gainController extends Controller
         $addMoney = $request->inputAddGainAuto;
         if ($addMoney === "true") {
             foreach ($arrayParticipantWin as $i => $participantWin) {
-                $pseudo = $participantWin->pseudo;
+                $pseudo         = $participantWin->pseudo;
 
-                $participant = $this->participant->getParticipant('pseudo', $pseudo);
+                $participant    = $this->participant->getParticipant('pseudo', $pseudo);
+                $group          = $this->groups->getGroup('nameGroup', [$nameGroup]);
 
                 $id_participant = $participant->id;
 
-                $money = $this->money->getMoney('id_pseudo', $id_participant);
+                $money          = $this->money->getMoney('id_pseudo', $id_participant);
 
                 $credit = $gainIndividuel;
                 $amount = $money[0]->amount;
@@ -99,7 +106,9 @@ class gainController extends Controller
                     'id_pseudo'     => $id_participant,
                     'date'          => $request->inputDate,
                     'amount'        => $amount,
+                    'id_group'      => $group->id,
                     'creditGain'    => $credit,
+                    'group_name'     => $nameGroup,
                 ];
                 $res_insert_money = $this->money->insertMoney($champs);
                 if ($res_insert_money['erreur']) {
