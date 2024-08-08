@@ -51,5 +51,38 @@ class GainRepository
         return $res;
     }
 
+    public function ajoutGroupInGain() 
+    {
+        $lignes = Money::query()->get();
+        foreach ($lignes as $ligne) {
+            // Rechercher le participant associé
+            $participant = Participants::query()
+                ->where('id', $ligne->id_pseudo)
+                ->first();
+        
+            // Vérifier si le participant est null
+            if ($participant === null || $participant->nameGroup == null) {
+                // Traitez le cas où le participant n'existe pas
+                echo "Aucun participant trouvé pour id_pseudo: " . $ligne->id_pseudo . "\n";
+                continue; // Passer à la ligne suivante
+            }
+        
+            $group = Groups::query()
+                ->where('nameGroup', $participant->nameGroup)
+                ->first();
+
+            // dd($participant->id, $group->id, $participant->nameGroup, date_format($ligne->created_at, "Y-m-d"));
+            // Mettre à jour la table Money avec les informations du groupe
+            Money::query()
+                ->where('id_pseudo', $participant->id)
+                ->update([
+                    'id_group'      => $group->id,
+                    'group_name'    => $participant->nameGroup,
+                    'date'          => date_format($ligne->created_at, "Y-m-d")
+                ])
+                ;
+        }
+    }
+
 
 }

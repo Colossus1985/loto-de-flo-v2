@@ -52,7 +52,7 @@
     </div>
     
     <div class="pb-3 box collapse" id="groups_ceationCollapse">
-        <h3 class="modal-title mb-3" id="addGain">
+        <h3 class="mb-3" id="addGain">
             Création d'un groupe
         </h3>
         <div class="mt-3">
@@ -88,7 +88,7 @@
         </div>
     </div>
     
-    <div class="pb-3 box collapse" id="groups_details_actifCollapse">
+    <div class="pb-3 box collapse show" id="groups_details_actifCollapse">
         <h3 class="mb-3">
             Les groupes avtif(s)
         </h3>

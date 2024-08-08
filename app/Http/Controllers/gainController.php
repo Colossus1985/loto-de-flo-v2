@@ -127,4 +127,10 @@ class gainController extends Controller
             'groups' => $groups,
         ]);
     } 
+
+    public function ajoutGroupInGain()
+    {
+        $this->gain->ajoutGroupInGain();
+        return response()->json('ok');
+    }
 }

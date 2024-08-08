@@ -109,18 +109,20 @@ class groupsController extends Controller
         $name_group = $request->inputNameGroupNew;
         $group = $this->groups->getGroup('nameGroup', $name_group);
 
-        if ($group != null) {
-            $group_id = $group->id;
-            $group_name = $group->nameGroup;
-        } else {
-            $group_id = null;
-            $group_name = null;
+        $group_ids      = [];
+        $group_names    = [];
+        foreach ($group as $data) {
+            $group_ids[]    = $data->id;
+            $group_names[]  = $data->nameGroup;
         }
+        $group_ids_json     = json_encode($group_ids);
+        $group_names_json   = json_encode($group_names);
 
         $champs = [
-            'groupID'   => $group_id,
-            'nameGroup' => $group_name,
+            'groupID'   => $group_ids_json,
+            'nameGroup' => $group_names_json,
         ];
+
         $res_update_participant = $this->participant->updateParticipant($champs, $id_participant);
         
         if ($res_update_participant['erreur']) {
@@ -130,6 +132,26 @@ class groupsController extends Controller
         
         return redirect()->back()
             ->with('success', 'Modification de groupe a été enregistrée avec succès !');
+    }
+
+    /**
+     * elnélver un participant de tous les groupes auxquels il adhère
+     * @param int id participant
+     */
+    public function participantGroupDelete($id_participant)
+    {
+        $champs = [
+            'groupID'   => null,
+            'nameGroup' => null,
+        ];
+        $res_delete_groupParticipant = $this->participant->updateParticipant($champs, $id_participant);
+        if ($res_delete_groupParticipant['erreur']) {
+            return redirect()->back()
+                ->with('error', $res_delete_groupParticipant['message']);
+        } 
+        
+        return redirect()->back()
+            ->with('success', 'Le participant le fait plus partie d\'un groupe.');
     }
 
     /**
@@ -148,6 +170,7 @@ class groupsController extends Controller
         return redirect()->back()
             ->with('success', 'Le groupe à été rendu inactif.');
     }
+    
 
     /**
      * Reactiver un groupe

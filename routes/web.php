@@ -30,8 +30,12 @@ Route::post('gains/debitMoney/{idParticipant}'                  , [moneyControll
 Route::post('group/addGroup'                                    , [groupsController::class, 'addGroup'])                    ->name('addGroup');
 Route::get('group/participantGroupForm'                         , [groupsController::class, 'participantGroupForm'])        ->name('participantGroupForm');
 Route::post('group/participantGroup'                            , [groupsController::class, 'participantGroup'])            ->name('participantGroup');
+Route::get('group/participantGroup/delete/{idParticipant}'      , [groupsController::class, 'participantGroupDelete'])      ->name('participantGroupDelete');
 Route::get('group/delete/{id_group}'                            , [groupsController::class, 'groupDelete'])                 ->name('groupDelete');
 Route::get('group/rallume/{id_group}'                           , [groupsController::class, 'groupRallume'])                ->name('groupRallume');
 
-Route::get('log/get-group-data/{name_groupe}'                   , [logController::class, 'getGroupData']);
+Route::get('log/get-group-data/{name_groupe}'                   , [gainController::class, 'getGroupData']);
+
+Route::get('ajoutGroupInGain', [gainController::class, 'ajoutGroupInGain']);
+
 

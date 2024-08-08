@@ -31,12 +31,15 @@ class participantController extends Controller
         $participant        = $this->participant->getParticipant('id', $id_participant, $actif);
         $money              = $this->money->getMoney('id_pseudo', $id_participant);
         $groups             = $this->groups->getGroups();
+        $participant_groups = json_decode($participant->nameGroup);
+        if (!$participant_groups) { $participant_groups = []; }
 
         // dd($participant);
         return view('pages.participant', [
-            'actions' => $money, 
-            'participant' => $participant,
-            'groups' => $groups
+            'actions'               => $money, 
+            'participant_groups'    => $participant_groups,
+            'participant'           => $participant,
+            'groups'                => $groups
             ]
         );
     }
@@ -47,8 +50,10 @@ class participantController extends Controller
      */
     public function getParticipants()
     {
-        $participants = $this->participant->getParticipants();
-        $participants_del = $this->participant->getParticipantsDeleted();
+        $participants       = $this->participant->getParticipants();
+        $participants_del   = $this->participant->getParticipantsDeleted();
+
+        // dd($participants[count($participants) -1]);
 
         return view('pages.participants', [
             'participants'      => $participants,
@@ -82,6 +87,7 @@ class participantController extends Controller
         $pseudo = $request->inputPseudo;
         $email = $request->inputEmail;
 
+        //=== vérification si le participant existe déjà sur le mail ou sinon le pseudo
         if ($email == null || $email == "") {
             $participantExist = $this->participant->getParticipant('pseudo', $pseudo);
             
@@ -170,22 +176,12 @@ class participantController extends Controller
                     ->with('error', $controle[0]['message']);
         }
 
-        $nameGroup = $request->inputNameGroupNew;
-        if ($nameGroup == "Pas de groupe") {
-            $nameGroup = null;
-            $groupID = null;
-        } else {
-            $groupID = $this->groups->getGroup('nameGroup', $nameGroup);
-        }
-        
         $champs = [
             'firstName'     => $request->inputFirstName,
             'lastName'      => $request->inputLastName,
-            'nameGroup'     => $nameGroup,
             'pseudo'        => $request->inputPseudo,
             'email'         => $request->inputEmail,
             'tel'           => $request->inputTel,
-            'groupID'       => $groupID,
         ];
         $res_update_participant = $this->participant->updateParticipant($champs, $id_participant);
 

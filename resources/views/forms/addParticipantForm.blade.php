@@ -8,17 +8,17 @@
     <form method="POST" action="{{ route('addParticipant') }}">
         @csrf
         <div class="form-group form-floating mb-3 d-flex">
-            <input type="text" class="form-control flex-fill" maxlength="20" name="inputFirstName" id="floatingFirstName" value="{{ old('inputFirstName') }}" placeholder="First name">
+            <input type="text" class="form-control flex-fill" maxlength="20" name="inputFirstName" id="floatingFirstName" value="{{ old('inputFirstName') }}" placeholder="First name" required>
             <label for="floatingFirstName">Prenom</label>
         </div>
 
         <div class="form-group form-floating mb-3 d-flex">
-            <input type="text" class="form-control flex-fill" maxlength="20" name="inputLastName" id="floatingLastName" value="{{ old('inputLastName') }}" placeholder="Last name">
+            <input type="text" class="form-control flex-fill" maxlength="20" name="inputLastName" id="floatingLastName" value="{{ old('inputLastName') }}" placeholder="Last name" required>
             <label for="floatingLastName">Nom</label>
         </div>
 
         <div class="form-group form-floating mb-3 d-flex">
-            <input type="text" class="form-control flex-fill" maxlength="15" name="inputPseudo" id="floatingPseudo" value="{{ old('inputPseudo') }}" placeholder="Pseudo">
+            <input type="text" class="form-control flex-fill" maxlength="15" name="inputPseudo" id="floatingPseudo" value="{{ old('inputPseudo') }}" placeholder="Pseudo" required>
             <label for="floatingPseudo">Pseudo</label>
         </div>
         
@@ -34,13 +34,13 @@
 
         <div class="border border-3 rounded-3 form-group form-floating mb-3 d-flex flex-fill flex-column">
             <div class="">
-                <p class="mt-1 mb-2 ps-3">Choisis le Group : </p>
+                <p class="mt-1 mb-2 ps-3">Choisis le ou les Group : </p>
             </div>
-             @foreach ($groups as $i => $group)
+            @foreach ($groups as $i => $group)
                 <div class="ms-3 form-check form-switch">
                     <input class="form-check-input me-3"
-                        type="radio" 
-                        name="inputNameGroup" 
+                        type="checkbox" 
+                        name="inputNameGroup[]"
                         role="switch" 
                         id="flexSwitchNameGroup_{{$i}}" 
                         value="{{ $group->nameGroup }}">

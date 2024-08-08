@@ -83,7 +83,16 @@ class ParticipantRepository
      */
     public function addParticipant($request) 
     {
-        $group      = $this->groups->getGroup('nameGroup', $request->input('inputNameGroup'));
+        $group          = $this->groups->getGroup('nameGroup', $request->input('inputNameGroup'));
+        $group_ids      = [];
+        $group_names    = [];
+        foreach ($group as $data) {
+            $group_ids[]    = $data->id;
+            $group_names[]  = $data->nameGroup;
+        }
+        $group_ids_json     = json_encode($group_ids);
+        $group_names_json   = json_encode($group_names);
+
         $message    = "$request->pseudo ajouté avec succès !";
 
         try {
@@ -91,8 +100,8 @@ class ParticipantRepository
             $participant = new Participants();
             $participant->firstName = $request->input('inputFirstName');
             $participant->lastName = $request->input('inputLastName');
-            $participant->nameGroup = $request->input('inputNameGroup');
-            $participant->groupId = $group->id;
+            $participant->nameGroup = $group_names_json;
+            $participant->groupId = $group_ids_json;
             $participant->pseudo = $request->input('inputPseudo');
             $participant->email = $request->input('inputEmail');
             $participant->tel = $request->input('inputTel');

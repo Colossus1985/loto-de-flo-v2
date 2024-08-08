@@ -12,127 +12,139 @@
 </style>
 
 <div class="p-5 fw-bold">
-    <form method="POST" action="{{ route('updateParticipant', $participant->id) }}">
-        @csrf
-        <div class="d-flex flex-row">
-            <div class="form-group form-floating mb-3 me-3 d-flex flex-fill">
-                <input id="floatingfirstName" 
-                    type="text" class="form-control flex-fill fw-bold" 
-                    name="inputFirstName"
-                    value="{{ $participant->firstName }}">
-                <label for="floatingfirstName" class="text-nowrap">Prenom</label>
-            </div>
-
-            <div class="form-group form-floating mb-3 me-3 d-flex flex-fill">
-                <input id="floatinglastName" 
-                    type="text" 
-                    class="form-control flex-fill fw-bold" 
-                    name="inputLastName"
-                    value="{{ $participant->lastName }}">
-                <label for="floatinglastName" class="text-nowrap">Nom</label>
-            </div>
-
-            <div class="form-group form-floating mb-3 d-flex flex-fill">
-                <input id="floatingpseudo" 
-                    type="text" 
-                    class="form-control flex-fill fw-bold" 
-                    name="inputPseudo"
-                    value="{{ $participant->pseudo }}">
-                <label for="floatingpseudo" class="text-nowrap">Pseudo</label>
+    <div>
+        <h3 class="mb-3">{{ $participant->pseudo }} ({{ $participant->firstName }} {{ $participant->firstName }})</h3>
+    </div>
+    <div class="d-flex">
+        <div class="my-3 me-3">
+            <div class="btn-group">
+                <button type="button" data-toggle="collapse" data-target="#details_Collapse" aria-expanded="false" aria-controls="attenteCollapse" class="btn btn-info">
+                    Détails personnelles
+                </button>
             </div>
         </div>
-        
-        <div class="d-flex flex-row">
-            <div class="form-group form-floating me-3">
-                <input id="floatingTel" 
-                    type="text" class="form-control fw-bold" 
-                    name="inputTel"
-                    value="{{ $participant->tel }}"
-                    >
-                <label for="floatingTel" class="text-nowrap">Téléphone</label>
+
+        <div class="my-3 me-3">
+            <div class="btn-group">
+                <button type="button" data-toggle="collapse" data-target="#historique_Collapse" aria-expanded="true" aria-controls="attenteCollapse" class="btn btn-info">
+                    Historique monétaire
+                </button>
             </div>
-            <div class="form-group form-floating me-3 d-flex flex-fill">
-                <input id="floatingEmail" 
-                    type="email" 
-                    class="form-control flex-fill fw-bold" 
-                    name="inputEmail"
-                    value="{{ $participant->email }}"
-                    autocomplete="email">
-                <label for="floatingEmail" class="text-nowrap">Email</label>
+        </div>
+
+        <div class="my-3 me-3">
+            <div class="btn-group">
+                @if ($participant->actif == 1)
+                    <form action="{{ route('participantDelete', $participant->id) }}" method="get">
+                        @csrf
+                        <div class="">
+                            <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('Veux tu vraiment supprimer {{ $participant->pseudo }} ?');">Supprimer {{$participant->pseudo}}
+                            </button>
+                        </div>
+                    </form>
+                @else {{ route('participantActiver', $participant->id) }}
+                    <form action="{{ route('participantActiver', $participant->id) }}" method="get">
+                        @csrf
+                        <div class="">
+                            <button type="submit" class="btn btn-success"
+                                onclick="return confirm('Veux tu vraiment annuler la suppression de {{ $participant->pseudo }} ?');">Rendre actif(ve) {{$participant->pseudo}}
+                            </button>
+                        </div>
+                    </form>
+                @endif
             </div>
-            <div class="d-flex flex-row ">
-                <div class="form-group form-floating d-flex flex-fill me-0">
-                    @if ($participant->nameGroup == null || $participant->nameGroup == "null" || $participant->nameGroup == "") 
-                        <input id="floatingNameGroup" type="text" class="form-control flex-fill fw-bold" name="inputNameGroupNew"
-                            value="Pas de groupe" readonly>
-                        <label for="floatingNameGroup" class="text-nowrap">Groupe</label>
-                    @else
-                        <input id="floatingNameGroup" type="text" class="form-control flex-fill fw-bold" name="inputNameGroupNew"
-                            value="{{ $participant->nameGroup }}" readonly>
-                        <label for="floatingNameGroup" class="text-nowrap">Groupe</label>
-                    @endif
+        </div>
+
+    </div>
+
+    <div class="pb-3 box collapse" id="details_Collapse">
+        <form method="POST" action="{{ route('updateParticipant', $participant->id) }}">
+            @csrf
+            <div class="d-flex flex-row flex-wrap">
+                <div class="form-group form-floating mb-3 me-3 d-flex flex-fill">
+                    <input id="floatingfirstName" 
+                        type="text" class="form-control flex-fill fw-bold" 
+                        name="inputFirstName"
+                        value="{{ $participant->firstName }}">
+                    <label for="floatingfirstName" class="text-nowrap">Prenom</label>
+                </div>
+
+                <div class="form-group form-floating mb-3 me-3 d-flex flex-fill">
+                    <input id="floatinglastName" 
+                        type="text" 
+                        class="form-control flex-fill fw-bold" 
+                        name="inputLastName"
+                        value="{{ $participant->lastName }}">
+                    <label for="floatinglastName" class="text-nowrap">Nom</label>
+                </div>
+
+                <div class="form-group form-floating mb-3 d-flex flex-fill">
+                    <input id="floatingpseudo" 
+                        type="text" 
+                        class="form-control flex-fill fw-bold" 
+                        name="inputPseudo"
+                        value="{{ $participant->pseudo }}">
+                    <label for="floatingpseudo" class="text-nowrap">Pseudo</label>
                 </div>
             </div>
-        </div>
-
-        {{-- <div class="d-flex flex-row">
-            <div class="form-group form-floating mb-3 me-3 d-flex flex-fill">
-                <input id="floatingPassword" 
-                    type="password" maxlength="20" 
-                    minlength="3" 
-                    class="form-control ui-tooltip" 
-                    title="entre 3 et 20 charactères" 
-                    name="inputPasswordActuel"
-                    placeholder="Password"
-                    autocomplete="current-password">
-                <label for="floatingPassword">actuel Password</label>
-            </div>
-            <div class="form-group form-floating mb-3 me-3 d-flex flex-fill">
-                <input id="floatingPasswordNew" 
-                    type="password" 
-                    maxlength="20" 
-                    minlength="3" 
-                    class="form-control ui-tooltip" 
-                    title="entre 3 et 20 charactères" 
-                    name="inputPassword"
-                    placeholder="Password"
-                    autocomplete="new-password" >
-                <label for="floatingPasswordNew">Nouveau Password</label>
-            </div>
-            <div class="form-group form-floating mb-3 d-flex flex-fill">
-                <input id="floatingConfirmPassword" 
-                    type="password"    
-                    maxlength="20" 
-                    minlength="3" 
-                    class="form-control ui-tooltip" 
-                    title="entre 3 et 20 charactères"
-                    name="inputPassword_confirmation" 
-                    autocomplete="new-password" 
-                    placeholder="Confirm Password">
-                <label for="floatingConfirmPassword">Confirmer Password</label>
-            </div>
-        </div> --}}
-
-        <div class="d-flex flex-row">
-            <div class="form-group form-floating mb-3 me-3">
-                <input id="floatingAmount_dispo" class="form-control text-end fw-bold"
-                    value="{{ $participant->amount }} €" readonly>
-                <label for="floatingAmount_dispo" class="text-nowrap">Disponible</label>
-            </div>
-
-            <div class="form-group form-floating mb-3 me-3">
-                <input id="floatingAmount_joue" class="form-control text-end fw-bold"
-                    value="{{ $participant->totalAmount }} €" readonly>
-                <label for="floatingAmount_joue" class="text-nowrap">Joué</label>
-            </div>
             
-            <div class="form-group form-floating flex-fill d-flex mb-3">
-                <button type="submit" class="btn btn-primary text-nowrap flex-fill">Enregistrer Changement</button>
+            <div class="d-flex flex-row flex-wrap">
+                <div class="form-group form-floating me-3">
+                    <input id="floatingTel" 
+                        type="text" class="form-control fw-bold" 
+                        name="inputTel"
+                        value="{{ $participant->tel }}"
+                        >
+                    <label for="floatingTel" class="text-nowrap">Téléphone</label>
+                </div>
+                <div class="form-group form-floating d-flex flex-fill">
+                    <input id="floatingEmail" 
+                        type="email" 
+                        class="form-control flex-fill fw-bold" 
+                        name="inputEmail"
+                        value="{{ $participant->email }}"
+                        autocomplete="email">
+                    <label for="floatingEmail" class="text-nowrap">Email</label>
+                </div>
             </div>
-            
-        </div>
-    </form>
-    <div>
+
+            <div class="d-flex flex-row flex-wrap">
+                <div class="form-group form-floating d-flex flex-fill">
+                    <input id="groups" 
+                        type="text" 
+                        class="form-control flex-fill fw-bold" 
+                        @if ($participant_groups)
+                            value="@foreach ($participant_groups as $data) {{ $data }} @endforeach"
+                        @else
+                            value="Pas de groups associé(s)"
+                        @endif
+                        readonly
+                        >
+                    <label for="groups" class="text-nowrap">Groups</label>
+                </div>
+            </div>
+
+            <div class="d-flex flex-row flex-wrap">
+                <div class="form-group form-floating mb-3 me-3">
+                    <input id="floatingAmount_dispo" class="form-control text-end fw-bold"
+                        value="{{ $participant->amount }} €" readonly>
+                    <label for="floatingAmount_dispo" class="text-nowrap">Disponible</label>
+                </div>
+
+                <div class="form-group form-floating mb-3 me-3">
+                    <input id="floatingAmount_joue" class="form-control text-end fw-bold"
+                        value="{{ $participant->totalAmount }} €" readonly>
+                    <label for="floatingAmount_joue" class="text-nowrap">Joué</label>
+                </div>
+                
+                <div class="form-group form-floating flex-fill d-flex mb-3">
+                    <button type="submit" class="btn btn-primary text-nowrap flex-fill">Enregistrer Changement</button>
+                </div>
+                
+            </div>
+        </form>
+
         <form action="{{ route('changeGroup', $participant->id) }}" method = "POST">
             @csrf
             <div class="border border-3 rounded-3 d-flex flex-column  ps-3 py-2 mb-3">
@@ -140,50 +152,60 @@
                     <p class="mt-1 mb-2 text-nowrap">Changer le Groupe : </p>
                 </div>
                 <div class="d-flex flex-row text-nowrap flex-wrap flex-fill">
-                    <div class="form-check form-switch bg-warning rounded-2 me-3 ms-1 text-nowrap">
-                        <input class="form-check-input me-1"
-                            type="radio" 
-                            name="inputNameGroupNew" 
-                            role="switch" 
-                            id="group_null" 
-                            value="null">
-                        <label class="form-check-label me-2 text-nowrap" for="group_null">Pas de groupe</label>
-                    </div>
                     @foreach ($groups as $i => $group)
-                        <div class="ms-1 form-check form-switch me-3">
+                        <div class="ms-1 form-check me-3">
                             <input class="form-check-input me-2"
-                                type="radio" 
-                                name="inputNameGroupNew" 
-                                role="switch" 
+                                type="checkbox" 
+                                name="inputNameGroupNew[]" 
                                 id="flexSwitchNameGroup_{{$i}}" 
                                 value="{{ $group->nameGroup }}">
                             <label class="form-check-label text-nowrap" for="flexSwitchNameGroup_{{$i}}">{{ $group->nameGroup }}</label>
                         </div>
                     @endforeach
                 </div>
-                <div class="form-group form-floating d-flex mt-3">
-                    <button type="submit" class="btn btn-primary text-nowrap">Changer groupe</button>
+                <div class="form-group form-floating d-flex mt-3 d-flex flex-wrap">
+                    <button type="submit" class="btn btn-primary text-nowrap me-3 mb-3 mb-xs-0 flex-fill">Changer groupe</button>
+                    <a href="{{ route('participantGroupDelete', $participant->id) }}" class="flex-fill btn btn-danger text-nowrap me-3 mb-3">Enlever de tous les groupes</a>
                 </div>
             </div>
         </form>
     </div>
 
-    <div>
+    <hr class="my-4"></hr>
+
+    <div class="pb-3 box collapse show" id="historique_Collapse">
         <div class="box-body table-responsive">
+            <div class="mb-3">
+                <h4>Historique des mouvement monetaire</h4>
+            </div>
             <table id="table_participant" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>
                 <thead>
                     <tr>
                         <th class="text-center">Date</th>
+                        <th class="text-center">Groupe</th>
                         <th class="text-center">Montant</th>
                         <th class="text-center">Credit</th>
                         <th class="text-center">Debit</th>
                         <th class="text-center">Credit Gain</th>
+                    </tr>
+                    <tr class="filterrow">
+                        <th></th>
+                        <th class="select-filter">
+                            <select id="s1-filter" placeholder="Recherche" style="width: 100%; height:1.7rem;">
+                                <option value="">Tous</option>
+                            </select>
+                        </th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($actions as $action)
                         <tr>
                             <td class="fw-bold text-center">{{ sql2display($action->created_at) }}</td>
+                            <td class="fw-bold text-center">{{ $action->group_name }}</td>
 
                             @if ($action->amount < 0)
                                 <td class="text-end fw-bold bg_color-negatif text-white">
@@ -229,48 +251,22 @@
                 </tbody>
                 <tfoot>
                     <tr id="tot-gen">
-                        <th colspan="2"><h4>Totaux page</h4></th>
+                        <th colspan="3"><h4>Totaux page</h4></th>
                         <th class="text-right"><h4 id="c2"></h4></th>
                         <th class="text-right"><h4 id="c3"></h4></th>
                         <th class="text-right"><h4 id="c4"></h4></th>
                     </tr>                            
                     <tr>
-                        <th colspan="2"><h4>Totaux généraux</h4></th>
+                        <th colspan="3"><h4>Totaux généraux</h4></th>
                         <th class="text-right"><h4 id="t2"></h4></th>
                         <th class="text-right"><h4 id="t3"></h4></th>
                         <th class="text-right"><h4 id="t4"></h4></th>
                     </tr>
                 </tfoot>
-            
-        </table>
+            </table>
+        </div>
     </div>
-    {{-- {{ $actions->links() }} --}}
-    
 
-    <div class="my-4">
-        @if ($participant->actif == 1)
-            <form action="{{ route('participantDelete', $participant->id) }}" method="get">
-                @csrf
-                <div class="">
-                    <button type="submit" class="btn btn-danger"
-                        onclick="return confirm('Veux tu vraiment supprimer {{ $participant->pseudo }} ?');">Supprimer {{$participant->pseudo}}
-                    </button>
-                </div>
-            </form>
-        @else {{ route('participantActiver', $participant->id) }}
-            <form action="{{ route('participantActiver', $participant->id) }}" method="get">
-                @csrf
-                <div class="">
-                    <button type="submit" class="btn btn-success"
-                        onclick="return confirm('Veux tu vraiment annuler la suppression de {{ $participant->pseudo }} ?');">Rendre actif(ve) {{$participant->pseudo}}
-                    </button>
-                </div>
-            </form>
-        @endif
-    </div>
-    
-        
-    
 </div>
 
 <script src="https://cdn.datatables.net/plug-ins/2.1.2/api/sum().js"></script>
@@ -280,7 +276,7 @@
     // $.fn.dataTable.moment( 'DD/MM/YY HH:mm:ss' );
     // $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );
     ///////////////////////////////////////
-    var cols_number = [1, 2, 3, 4];
+    var cols_number = [2, 3, 4, 5];
     var table = $("#table_participant").DataTable({
         language: {
             "sProcessing": "Traitement en cours...",
@@ -325,18 +321,18 @@
         // Totaux
         drawCallback: function () {
             var api = this.api();
-            var c2  = api.column( 2, {page:'current'} ).data().sum();
-            var c3  = api.column( 3, {page:'current'} ).data().sum();
-            var c4  = api.column( 4, {page:'current'} ).data().sum();
+            var c2  = api.column( 3, {page:'current'} ).data().sum();
+            var c3  = api.column( 4, {page:'current'} ).data().sum();
+            var c4  = api.column( 5, {page:'current'} ).data().sum();
             c2    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c2);
             c3    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c3);
             c4    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c4);
             $("#c2").html(c2);
             $("#c3").html(c3);
             $("#c4").html(c4);
-            var t2 = api.column( 2, {filter: 'applied'} ).data().sum();
-            var t3 = api.column( 3, {filter: 'applied'} ).data().sum();
-            var t4 = api.column( 4, {filter: 'applied'} ).data().sum();
+            var t2 = api.column( 3, {filter: 'applied'} ).data().sum();
+            var t3 = api.column( 4, {filter: 'applied'} ).data().sum();
+            var t4 = api.column( 5, {filter: 'applied'} ).data().sum();
             t2    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t2);
             t3    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t3);
             t4    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t4);
@@ -355,7 +351,7 @@
         initComplete: function () {
             $("#loading").hide();
             var api = this.api();
-            var elt = api.column(0).data().unique();
+            var elt = api.column(1).data().unique();
             for (var i = 0; i < elt.length; i++) {
                 var option = '<option value="'+elt[i]+'">'+elt[i]+'</option>'
                 $(option).appendTo("#s1-filter");

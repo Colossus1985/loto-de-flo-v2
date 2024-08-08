@@ -42,9 +42,9 @@ class GroupsRepository
     public function getGroup($champ, $valeur)
     {
         $query = Groups::query()
-            ->where($champ, $valeur)
+            ->whereIn($champ, $valeur)
             ;
-        $res = $query->first();
+        $res = $query->get();
 
         return $res;
     }

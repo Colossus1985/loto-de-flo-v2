@@ -139,13 +139,6 @@ function controlesInputs($request)
         }
     }
 
-    if ($nameGroup != null || $nameGroup != '') {
-        if (!preg_match($regexLiberty, $nameGroup)) {
-            array_push($arrayControles, ['erreur' => true, 'message' => "Attention aux charactères spéciaux dans le nom du groupe!"]);
-            return $arrayControles;
-        }
-    }
-
     array_push($arrayControles, ['erreur' => false, 'message' => ""]);
         return $arrayControles;
 }
