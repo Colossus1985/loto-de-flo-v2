@@ -117,7 +117,7 @@
                             <span class="fw-bold fs-3">Gains : 0.00 €</span>
                         @endif
                         <div class="fs-3">
-                            <a href="{{ route('groupDelete', $groupe->id) }}"
+                            <a href="{{ route('groupDelete', [$groupe->id, $groupe->nameGroup]) }}"
                                 @if ( count($groupe->participants_group) > 0) 
                                     onclick="return confirm('Attention il y a encore des joueurs dans le groupe {{ $groupe->nameGroup }}!! Continuer la suppression ?');"
                                 @else
@@ -169,7 +169,9 @@
             Composition de Groupe
         </h3>
         <div class="mt-3">
-            <form method="POST" action="{{ route('participantGroup') }}">
+            Indisponible pour l'instint dans cette partie, désolé! <br>
+            Vas dans les détails d'un participant pour l'associer à un ou plusieurs groupes ;).
+            {{-- <form method="POST" action="{{ route('participantGroup') }}">
                 @csrf
                 <div class="form-group form-floating mb-3 d-flex flex-row">
                     <div class="border border-3 rounded-3 form-group form-floating me-3 d-flex flex-fill flex-column">
@@ -217,7 +219,7 @@
                         Composer le group
                     </button>
                 </div>
-            </form>
+            </form> --}}
         </div>
     </div>
 

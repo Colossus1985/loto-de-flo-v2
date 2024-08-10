@@ -40,7 +40,7 @@ class participantController extends Controller
 
         //=== si le participant n'a plus d'apartenance à un group on affiche plus les totaux
         $sommes = [];
-        if ($money[0]->group_name) {
+        if ($participant_groups != []) {
             $array_groups_id = json_decode($participant->group_id);
             foreach ($money as $data) {
                 //=== on vérifie si le participant est associé encore au groupe

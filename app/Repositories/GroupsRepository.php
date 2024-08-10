@@ -44,7 +44,7 @@ class GroupsRepository
         $query = Groups::query()
             ->whereIn($champ, $valeur)
             ;
-        $res = $query->first();
+        $res = $query->get();
 
         return $res;
     }
@@ -134,30 +134,56 @@ class GroupsRepository
      * supprimer un group
      * enlever le group des personne qui sont dans le groupe
      */
-    public function deleteGroup($id_group)
+    public function deleteGroup($group_id, $nameGroup)
     {
-        $erreur     = false;
-        $message   = "";
-        $query = Groups::query()
-            ->where('id', $id_group)
-            ;
+        $erreur  = false;
+        $message = "";
+        // Désactiver le groupe
+        $query = Groups::query()->where('id', $group_id);
         $res_delete_group = $query->update(['actif' => 0]);
+
+        // Enlever le groupe des participants s'il a été désactivé
+        $res_delete_group = true;
         if ($res_delete_group) {
-            $query = Participants::query()
-                ->where('groupID', $id_group)
-                ;
-            $res_maj_participant = $query->update([
-                'groupID'   => null,
-                'nameGroup' => null,
-            ]);
-        } else  {
+            $participants = Participants::all();  // Récupérer tous les participants
+
+            foreach ($participants as $participant) {
+                // Décoder les valeurs JSON
+                $group_ids   = json_decode($participant->group_id, true);
+                $group_names = json_decode($participant->nameGroup, true);
+
+                // Vérifier si $group_id est présent dans $group_ids
+                if (is_array($group_ids) && in_array($group_id, $group_ids)) {
+                    // Retirer l'ID du tableau $group_ids
+                    $group_ids = array_values(array_filter($group_ids, function ($id) use ($group_id) {
+                        return $id != $group_id;
+                    }));
+
+                    // Retirer le nom du groupe du tableau $group_names
+                    $group_names = array_values(array_filter($group_names, function ($name) use ($nameGroup) {
+                        return $name !== $nameGroup;
+                    }));
+
+                    // Reconvertir les tableaux en JSON
+                    $participant->group_id = json_encode($group_ids);
+                    $participant->nameGroup = json_encode($group_names);
+
+                    // Mettre à jour la ligne dans la base de données
+                    if (!$participant->save()) {
+                        $erreur = true;
+                        $message = "Un problème est survenu lors de la mise à jour du participant {$participant->id}.";
+                        break;
+                    }
+                }
+            }
+        } else {
             $erreur = true;
             $message = "Un problème est survenu lors de la suppression du groupe.";
         }
 
-        $res = ['erreur' => false, 'message' => $message];
-        return $res;
+        return ['erreur' => $erreur, 'message' => $message];
     }
+
 
     /**
      * Reactiver un groupe

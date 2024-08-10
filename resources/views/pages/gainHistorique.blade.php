@@ -37,7 +37,7 @@
             </div>
         </div>
         
-        <div class="box-body table-responsive">
+        <div class="box-body table-responsive bg-light p-2 rounded">
             <table id="table_gainsHistory" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>
                 <thead>
                     <tr>
@@ -150,7 +150,7 @@
             { extend: 'pdf', footer: true }, //, exportOptions: { columns: [1,2] }}         
             { extend: 'excel', footer: true },
         ],  
-        order: [[ 0, 'desc' ]],
+        order: [],
 
         columnDefs: [
                 { type: 'formatted-num', targets: cols_number },

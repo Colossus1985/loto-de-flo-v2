@@ -106,7 +106,7 @@ class gainController extends Controller
                     'id_pseudo'     => $id_participant,
                     'date'          => $request->inputDate,
                     'amount'        => $amount,
-                    'id_group'      => $group->id,
+                    'id_group'      => $group[0]->id,
                     'creditGain'    => $credit,
                     'group_name'     => $nameGroup,
                 ];

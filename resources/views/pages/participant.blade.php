@@ -132,13 +132,23 @@
             <div class="d-flex flex-row flex-wrap">
                 <div class="form-group form-floating mb-3 me-3">
                     <input id="floatingAmount_dispo" class="form-control text-end fw-bold"
-                        value="{{ $participant->amount }} €" readonly>
+                        @if ($participant->amount == 0)
+                            value="0.00 €" 
+                        @else 
+                            value="{{ ifNotZero($participant->amount, true, ' €', '.', ' ') }}"
+                        @endif 
+                        readonly>
                     <label for="floatingAmount_dispo" class="text-nowrap">Fonds globaux</label>
                 </div>
 
                 <div class="form-group form-floating mb-3 me-3">
                     <input id="floatingAmount_joue" class="form-control text-end fw-bold"
-                        value="{{ $participant->totalAmount - $participant->amount }} €" readonly>
+                        @if (($participant->totalAmount - $participant->amount) == 0)
+                            value="0.00 €" 
+                        @else 
+                            value="{{ ifNotZero(($participant->totalAmount - $participant->amount), true, ' €', '.', ' ') }}" 
+                        @endif
+                        readonly>
                     <label for="floatingAmount_joue" class="text-nowrap">Mises en jeu globale</label>
                 </div>
                 
@@ -207,6 +217,7 @@
                                 <h5>{{ $data['group_name'] }}</h5>
                             </div>
                             <div class="d-flex flex-row flex-wrap flex-fill">
+
                                 <div class="row form-group form-floating mb-3 me-3 flex-fill">
                                     <input id="dispo_{{ $i }}" 
                                         @if ($data['value_totale'] < 0)
@@ -229,21 +240,40 @@
                                     >
                                     <label for="dispo_{{ $i }}" class="text-nowrap">Fonds dipso</label>
                                 </div>
+
                                 <div class="form-group form-floating mb-3 me-3 flex-fill">
                                     <input id="credit_{{ $i }}" class="form-control text-end fw-bold"
-                                        value="{{ $data['value_credit'] }} €" readonly>
+                                        @if ($data['value_credit'] == 0.00 || $data['value_credit'] == null)
+                                            value="0.00 €"
+                                        @else
+                                            value="{{ ifNotZero($data['value_credit'], true, ' €', '.', ' ') }}"
+                                        @endif
+                                    readonly>
                                     <label for="credit_{{ $i }}" class="text-nowrap">Crédit total</label>
                                 </div>
+
                                 <div class="form-group form-floating mb-3 me-3 flex-fill">
-                                    <input id="debit_{{ $i }}" class="form-control text-end fw-bold"
-                                        value="{{ $data['value_debit'] }} €" readonly>
-                                    <label for="debit_{{ $i }}" class="text-nowrap">Débit total</label>
+                                    <input id="credit_{{ $i }}" class="form-control text-end fw-bold"
+                                        @if ($data['value_debit'] == 0.00 || $data['value_debit'] == null)
+                                            value="0.00 €"
+                                        @else
+                                            value="{{ ifNotZero($data['value_debit'], true, ' €', '.', ' ') }}"
+                                        @endif
+                                    readonly>
+                                    <label for="credit_{{ $i }}" class="text-nowrap">Débit total</label>
                                 </div>
-                                <div class="form-group form-floating mb-3 flex-fill">
-                                    <input id="credit_gain_{{ $i }}" class="form-control text-end fw-bold"
-                                        value="{{ $data['value_credit_gain'] }} €" readonly>
-                                    <label for="credit_gain_{{ $i }}" class="text-nowrap">Gains globaux</label>
+
+                                <div class="form-group form-floating mb-3 me-3 flex-fill">
+                                    <input id="credit_{{ $i }}" class="form-control text-end fw-bold"
+                                        @if ($data['value_credit_gain'] == 0.00 || $data['value_credit_gain'] == null)
+                                            value="0.00 €"
+                                        @else
+                                            value="{{ ifNotZero($data['value_credit_gain'], true, ' €', '.', ' ') }}"
+                                        @endif
+                                    readonly>
+                                    <label for="credit_{{ $i }}" class="text-nowrap">Gains totaux</label>
                                 </div>
+                                
                             </div>
                         </div>
                     @endforeach

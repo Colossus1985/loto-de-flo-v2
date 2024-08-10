@@ -79,9 +79,9 @@ class groupsController extends Controller
         }
 
         $nameGroup = $request->inputNameGroup;
-        $groupExists = $this->groups->getGroup('nameGroup', $nameGroup);
+        $groupExists = $this->groups->getGroup('nameGroup', [$nameGroup]);
 
-        if ($groupExists) {
+        if (count($groupExists) != 0) {
             return redirect()->back()
                 ->with('error', 'Le groupe '.$nameGroup.' existe déjà!');
         }
@@ -107,11 +107,11 @@ class groupsController extends Controller
     {
         // dd($request);
         $name_group = $request->inputNameGroupNew;
-        $group = $this->groups->getGroup('nameGroup', $name_group);
+        $groups = $this->groups->getGroup('nameGroup', $name_group);
 
         $group_ids      = [];
         $group_names    = [];
-        foreach ($group as $data) {
+        foreach ($groups as $data) {
             $group_ids[]    = $data->id;
             $group_names[]  = $data->nameGroup;
             $res = $this->money->historique_exist($data->id, $data->nameGroup, $id_participant);
@@ -160,9 +160,9 @@ class groupsController extends Controller
      * enlever les participant du groupe supprimer
      * @param int id du groupe
      */
-    public function groupDelete($id_group)
+    public function groupDelete($id_group, $nameGroup)
     {
-        $res_delete_group = $this->groups->deleteGroup($id_group);
+        $res_delete_group = $this->groups->deleteGroup($id_group, $nameGroup);
         if ($res_delete_group['erreur']) {
             return redirect()->back()
                 ->with('error', $res_delete_group['message']);

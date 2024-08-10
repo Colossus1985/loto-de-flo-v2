@@ -14,7 +14,7 @@
     <div>
         <h3 class="p-3">Les participants</h3>
     </div>
-    <div class="box-body table-responsive">
+    <div class="box-body table-responsive bg-light rounded p-2">
         <table id="table_participants" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>
             <thead>
                 <tr>
