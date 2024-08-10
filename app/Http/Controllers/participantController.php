@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Participants;
 use App\Repositories\ParticipantRepository;
 use App\Repositories\GroupsRepository;
 use App\Repositories\MoneyRepository;
@@ -89,7 +88,8 @@ class participantController extends Controller
      */
     public function getParticipants()
     {
-        $participants       = $this->participant->getParticipants();
+        $participants       = $this->money->getJeux();
+        // $participants       = $this->participant->getParticipants();
         $participants_del   = $this->participant->getParticipantsDeleted();
 
         // dd($participants[count($participants) -1]);

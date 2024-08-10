@@ -9,6 +9,7 @@ use App\Models\Participants;
 
 use Illuminate\Database\QueryException;
 use Exception;
+use DB;
 
 class MoneyRepository 
 {
@@ -113,6 +114,32 @@ class MoneyRepository
         }   
         return $arrayFondsByGroup;
     }
+
+    /**
+     * récupérer le récap de tous les participants actif
+     */
+    public function getJeux()
+    {
+        $query = Money::select(
+            'money.id_pseudo',
+            'money.pseudo',
+            'money.id_group',
+            'money.group_name',
+            DB::raw('SUM(money.credit) AS total_credit'),
+            DB::raw('SUM(money.creditGain) AS total_gain'),
+            DB::raw('SUM(money.debit) AS total_jouee'),
+            DB::raw('(SUM(money.credit) + SUM(money.creditGain)) - SUM(money.debit) AS total_dispo')
+        )
+        ->join('participants', 'money.id_pseudo', '=', 'participants.id')
+        ->where('participants.actif', 1)
+        ->whereNotNull('money.id_group')
+        ->groupBy('money.id_pseudo', 'money.pseudo', 'money.id_group', 'money.group_name');
+    
+        $res = $query->get();
+
+        return $res;
+    }
+
 
     function gains($groups)
     {

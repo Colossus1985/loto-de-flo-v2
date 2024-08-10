@@ -1,9 +1,9 @@
-<div class="modal fade" id="modalAddMoney{{$participant->id}}" tabindex="-1" aria-labelledby="{{$participant->id}}" aria-hidden="true">
+<div class="modal fade" id="modalAddMoney{{$participant->id_pseudo}}" tabindex="-1" aria-labelledby="{{$participant->id_pseudo}}" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="d-flex flex-row">
-                    <h5 class="modal-title me-1" id="{{$participant->id}}">
+                    <h5 class="modal-title me-1" id="{{$participant->id_pseudo}}">
                         💲💲 Ajouter des Fonds pour 
                     </h5>
                     <h5 class="modal-title text-info mb-0">{{$participant->pseudo}} 💲💲</h5>
@@ -16,7 +16,7 @@
                 ></button>
             </div>
             <div class="modal-body">
-                <form class="d-flex flex-row" method="POST" action="{{ route('addMoney', $participant->id) }}">
+                <form class="d-flex flex-row" method="POST" action="{{ route('addMoney', $participant->id_pseudo) }}">
                     @csrf
                     <input name="input_pseudo" hidden readonly value="{{$participant->pseudo}}">
                     <div class="form-group form-floating mb-3 d-flex">

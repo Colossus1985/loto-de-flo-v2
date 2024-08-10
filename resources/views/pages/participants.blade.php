@@ -21,8 +21,11 @@
                     <th class="text-center">Groupe</th>
                     <th class="text-center">Pseudo</th>
                     <th class="text-center">Disponible</th>
-                    <th class="text-center"></th>
+                    <th class="text-center">Donné</th>
                     <th class="text-center">Joué</th>
+                    <th class="text-center">Gains</th>
+                    <th class="text-center"></th>
+                    
                 </tr>
                 <tr class="filterrow">
                     <th class="s1_select-filter">
@@ -34,44 +37,71 @@
                     <th></th>
                     <th></th>
                     <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($participants as $participant)
-                    <tr @if ( $participant->amount < 0)
+                    <tr @if ( $participant->total_dispo < 0)
                             class="bg_color-negatif"
-                        @elseif ( $participant->amount == null || $participant->amount == 0)
+                        @elseif ( $participant->total_dispo == null || $participant->total_dispo == 0)
                             class="bg_color-null"
-                        @elseif ( $participant->amount <= 3.49)
+                        @elseif ( $participant->total_dispo <= 3.49)
                             class="bg_color-limit"
-                        @elseif ( $participant->amount < 10 && $participant->amount >= 3.5)
+                        @elseif ( $participant->total_dispo < 10 && $participant->total_dispo >= 3.5)
                             class="bg_color-ok"
                         @else
                             class="bg_color-super"
                         @endif
                     >
-                        <td 
-                            @if ($participant->nameGroup == null || $participant->nameGroup == "" || $participant->nameGroup == "null")
+                        <td style="padding-top: 0.6rem;"
+                            @if ($participant->group_name == null || $participant->group_name == "" || $participant->group_name == "null")
                                 class="text_nowrap align-middle d-flex align-items-center justify-content-center">
                                 pas de groupe
                             @else
                                 class="text_nowrap align-middle d-flex align-items-center justify-content-center">
-                                {{ $participant->nameGroup }}
+                                {{ $participant->group_name }}
                             @endif
                         </td>
+
                         <td>
-                            <a href="{{ route('participant', [$participant->id, $participant->actif]) }}" 
+                            <a href="{{ route('participant', [$participant->id_pseudo, 1]) }}" 
                                 title="voir détails" 
                                 class="ui-tooltip btn-sm btn-info d-flex justify-content-center align-items-center mt-1 text-decoration-none">
                                 {{ $participant->pseudo }}
                             </a>
                         </td>
 
-                        <td class="fw-bold d-flex justify-content-end align-items-center pe-2" style="height: 2.5rem;">
-                            @if ( $participant->amount == 0)
+                        <td class=" pe-2 text-end" style="padding-top: 0.6rem;">
+                            @if ( $participant->total_dispo == 0)
                                 0.00 € 
                             @else 
-                                {{ ifNotZero($participant->amount, true, ' €', '.', ' ') }}
+                                {{ ifNotZero($participant->total_dispo, true, ' €', '.', ' ') }}
+                            @endif
+                        </td>
+
+                        <td class=" pe-2 text-end" style="padding-top: 0.6rem;">
+                            @if ( $participant->total_credit == 0)
+                                0.00 € 
+                            @else 
+                                {{ ifNotZero($participant->total_credit, true, ' €', '.', ' ') }}
+                            @endif
+                        </td>
+
+                        <td class=" pe-2 text-end text-danger" style="padding-top: 0.6rem;">
+                            @if ( $participant->total_jouee == 0)
+                                0.00 € 
+                            @else 
+                                - {{ ifNotZero($participant->total_jouee, true, ' €', '.', ' ') }}
+                            @endif
+                        </td>
+
+                        <td class=" pe-2 text-end text-success" style="padding-top: 0.6rem;">
+                            @if ( $participant->total_gain == 0)
+                                0.00 € 
+                            @else 
+                                + {{ ifNotZero($participant->total_gain, true, ' €', '.', ' ') }}
                             @endif
                         </td>
 
@@ -81,33 +111,18 @@
                                     class="my-green_light widht-full btn-sm btn-light me-3 ms-1 border ui-tooltip" 
                                     title="crediter" 
                                     data-bs-toggle="modal" 
-                                    data-bs-target="#modalAddMoney{{$participant->id}}"
+                                    data-bs-target="#modalAddMoney{{$participant->id_pseudo}}"
                                     style="width: 100%;">
                                     ➕</button>
                                 <button type="button" 
                                     class="widht-full btn-sm btn-light me-1 border ui-tooltip" 
                                     title="debiter" 
                                     data-bs-toggle="modal" 
-                                    data-bs-target="#modalDebitMoney{{$participant->id}}"
+                                    data-bs-target="#modalDebitMoney{{$participant->id_pseudo}}"
                                     style="width: 100%;">
                                     ➖</button>
                             </div>
                         </td>
-
-                        <td 
-                            @php 
-                                $jouee = $participant->totalAmount - $participant->amount
-                            @endphp
-                            @if ($jouee == 0)
-                                class="align-middle text-end fw-bold">
-                                    0.00 €
-                            @else 
-                                class="align-middle text-end fw-bold">
-                                    {{ ifNotZero($jouee, true, ' €', '.', ' ') }}
-                            @endif
-                        </td>
-
-                        
                         
                     </tr>
                     @include('modals.addMoney')
@@ -118,14 +133,18 @@
                 <tr id="tot-gen">
                     <th colspan="2"><h4>Totaux page</h4></th>
                     <th class="text-right"><h4 id="c1"></h4></th>
-                    <th></th>
                     <th class="text-right"><h4 id="c2"></h4></th>
+                    <th class="text-right text-danger"><h4 id="c3"></h4></th>
+                    <th class="text-right text-success"><h4 id="c4"></h4></th>
+                    <th></th>
                 </tr>                            
                 <tr>
                     <th colspan="2"><h4>Totaux généraux</h4></th>
                     <th class="text-right"><h4 id="t1"></h4></th>
-                    <th></th>
                     <th class="text-right"><h4 id="t2"></h4></th>
+                    <th class="text-right text-danger"><h4 id="t3"></h4></th>
+                    <th class="text-right text-success"><h4 id="t4"></h4></th>
+                    <th></th>
                 </tr>
             </tfoot>
         </table>
@@ -145,20 +164,12 @@
                 <table id="table_participants_del" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>
                     <thead>
                         <tr>
-                            <th class="text-center">Groupe</th>
                             <th class="text-center">Pseudo</th>
                             <th class="text-center">Disponible</th>
-                            <th class="text-center"></th>
                             <th class="text-center">Joué</th>
                         </tr>
                         <tr class="filterrow">
-                            <th class="a1_select-filter">
-                                <select id="a1-filter" placeholder="Recherche" style="width: 100%; height:1.7rem;">
-                                    <option value="">Tous</option>
-                                </select>
-                            </th>
                             <th class="a1_input-filter" data-column="2"><input type="text" placeholder="Recherche" style="width: 100%;"></th>
-                            <th></th>
                             <th></th>
                             <th></th>
                         </tr>
@@ -177,15 +188,6 @@
                                     class="bg_color-super"
                                 @endif
                             >
-                                <td 
-                                    @if ($participant->nameGroup == null || $participant->nameGroup == "" || $participant->nameGroup == "null")
-                                        class="text_nowrap align-middle d-flex align-items-center justify-content-center">
-                                        pas de groupe
-                                    @else
-                                        class="text_nowrap align-middle d-flex align-items-center justify-content-center">
-                                        {{ $participant->nameGroup }}
-                                    @endif
-                                </td>
                                 <td>
                                     <a href="{{ route('participant', [$participant->id, $participant->actif]) }}" 
                                         title="voir détails" 
@@ -195,7 +197,7 @@
                                     </a>
                                 </td>
         
-                                <td class="fw-bold d-flex justify-content-end align-items-center pe-2" style="height: 2.5rem;">
+                                <td class="text-end pe-2" style="padding-top: 0.7rem;">
                                     @if ( $participant->amount == 0)
                                         0.00 € 
                                     @else 
@@ -203,61 +205,22 @@
                                     @endif
                                 </td>
         
-                                <td>
-                                    <div class="d-flex flex-row justify-content-center align-items-center">
-                                        <button type="button" 
-                                            class="my-green_light widht-full btn-sm btn-light me-3 ms-1 border ui-tooltip" 
-                                            title="crediter" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#modalAddMoney{{$participant->id}}"
-                                            style="width: 100%;">
-                                            ➕</button>
-                                        <button type="button" 
-                                            class="widht-full btn-sm btn-light me-1 border ui-tooltip" 
-                                            title="debiter" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#modalDebitMoney{{$participant->id}}"
-                                            style="width: 100%;">
-                                            ➖</button>
-                                    </div>
-                                </td>
-        
-                                <td 
+                                <td class="text-end pe-2" style="padding-top: 0.7rem;">
                                     @if ($participant->totalAmount == '' || $participant->totalAmount == 0)
-                                        class="align-middle text-end fw-bold">
                                             0.00 €
                                     @else 
-                                        class="align-middle text-end fw-bold">
-                                            {{ ifNotZero($participant->totalAmount, true, ' €', '.', ' ') }}
+                                        {{ ifNotZero($participant->totalAmount, true, ' €', '.', ' ') }}
                                     @endif
                                 </td>
         
                             </tr>
-                            @include('modals.addMoney')
-                            @include('modals.debitMoney')
                         @endforeach
                     </tbody>
-                    <tfoot>
-                        <tr id="tot-gen">
-                            <th colspan="2"><h4>Totaux page</h4></th>
-                            <th class="text-right"><h4 id="c1"></h4></th>
-                            <th></th>
-                            <th class="text-right"><h4 id="c2"></h4></th>
-                        </tr>                            
-                        <tr>
-                            <th colspan="2"><h4>Totaux généraux</h4></th>
-                            <th class="text-right"><h4 id="t1"></h4></th>
-                            <th></th>
-                            <th class="text-right"><h4 id="t2"></h4></th>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>
     </div>
 </div>
-
-
 
 
 <script src="https://cdn.datatables.net/plug-ins/2.1.2/api/sum().js"></script>
@@ -267,7 +230,7 @@
     // $.fn.dataTable.moment( 'DD/MM/YY HH:mm:ss' );
     // $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );
     ///////////////////////////////////////
-    var cols_number = [2, 4];
+    var cols_number_1 = [2, 3, 4, 5];
     var table = $("#table_participants").DataTable({
         language: {
             "sProcessing": "Traitement en cours...",
@@ -303,27 +266,39 @@
             { extend: 'pdf', footer: true }, //, exportOptions: { columns: [1,2] }}         
             { extend: 'excel', footer: true },
         ],  
-        order: [[ 0, 'desc' ]],
+        order: [],
 
         columnDefs: [
-                { type: 'formatted-num', targets: cols_number },
-                { type: 'numeric-comma', targets: cols_number },
+                { type: 'formatted-num', targets: cols_number_1 },
+                { type: 'numeric-comma', targets: cols_number_1 },
             ],
         // Totaux
         drawCallback: function () {
             var api = this.api();
             var c1  = api.column( 2, {page:'current'} ).data().sum();
-            var c2  = api.column( 4, {page:'current'} ).data().sum();
+            var c2  = api.column( 3, {page:'current'} ).data().sum();
+            var c3  = api.column( 4, {page:'current'} ).data().sum();
+            var c4  = api.column( 5, {page:'current'} ).data().sum();
             c1    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c1);
             c2    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c2);
+            c3    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c3);
+            c4    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c4);
             $("#c1").html(c1);
             $("#c2").html(c2);
+            $("#c3").html(c3);
+            $("#c4").html(c4);
             var t1 = api.column( 2, {filter: 'applied'} ).data().sum();
-            var t2 = api.column( 4, {filter: 'applied'} ).data().sum();
+            var t2 = api.column( 3, {filter: 'applied'} ).data().sum();
+            var t3 = api.column( 4, {filter: 'applied'} ).data().sum();
+            var t4 = api.column( 5, {filter: 'applied'} ).data().sum();
             t1    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t1);
             t2    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t2);
+            t3    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t3);
+            t4    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t4);
             $("#t1").html(t1);
             $("#t2").html(t2);
+            $("#t3").html(t3);
+            $("#t4").html(t4);
 
             if (api.page.len() == -1 || api.page.info().pages == 1) {;
                 $("#tot-gen").hide(1000);
@@ -412,34 +387,7 @@
             { extend: 'pdf', footer: true }, //, exportOptions: { columns: [1,2] }}         
             { extend: 'excel', footer: true },
         ],  
-        order: [[ 0, 'desc' ]],
-
-        columnDefs: [
-                { type: 'formatted-num', targets: cols_number },
-                { type: 'numeric-comma', targets: cols_number },
-            ],
-        // Totaux
-        drawCallback: function () {
-            var api = this.api();
-            var c1  = api.column( 2, {page:'current'} ).data().sum();
-            var c2  = api.column( 4, {page:'current'} ).data().sum();
-            c1    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c1);
-            c2    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c2);
-            $("#c1").html(c1);
-            $("#c2").html(c2);
-            var t1 = api.column( 2, {filter: 'applied'} ).data().sum();
-            var t2 = api.column( 4, {filter: 'applied'} ).data().sum();
-            t1    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t1);
-            t2    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t2);
-            $("#t1").html(t1);
-            $("#t2").html(t2);
-
-            if (api.page.len() == -1 || api.page.info().pages == 1) {;
-                $("#tot-gen").hide(1000);
-            } else {
-                $("#tot-gen").show(1000);
-            }
-        }, 
+        order: [],
 
         // Selects
         initComplete: function () {
