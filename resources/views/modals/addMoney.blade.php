@@ -1,12 +1,13 @@
-<div class="modal fade" id="modalAddMoney{{$participant->id_pseudo}}" tabindex="-1" aria-labelledby="{{$participant->id_pseudo}}" aria-hidden="true">
+<div class="modal fade" id="modalAddMoney{{$i}}" tabindex="-1" aria-labelledby="{{$i}}" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content" style="width: 125%; !important">
             <div class="modal-header">
-                <div class="d-flex flex-row">
-                    <h5 class="modal-title me-1" id="{{$participant->id_pseudo}}">
-                        💲💲 Ajouter des Fonds pour 
-                    </h5>
-                    <h5 class="modal-title text-info mb-0">{{$participant->pseudo}} 💲💲</h5>
+                <div class="d-flex flex-row text-nowrap">
+                    <h5 class="modal-title me-2" id="{{$participant->id_pseudo}}">💲💲 Ajouter des Fonds pour </h5>
+                    <h5 class="modal-title text-info mb-0">{{$participant->pseudo}}</h5>
+                    <h5 class="modal-title ">&nbsp; du groupe &nbsp;</h5>
+                    <h5 class="modal-title text-danger mb-0">{{ $participant->group_name }}</h5>
+                    <h5 class="modal-title ">&nbsp; 💲💲</h5>
                 </div>
                 <button
                     type="button"
@@ -19,6 +20,7 @@
                 <form class="d-flex flex-row" method="POST" action="{{ route('addMoney', $participant->id_pseudo) }}">
                     @csrf
                     <input name="input_pseudo" hidden readonly value="{{$participant->pseudo}}">
+                    <input name="input_group_name" hidden readonly value="{{$participant->group_name}}">
                     <div class="form-group form-floating mb-3 d-flex">
                         <input
                             type="number"

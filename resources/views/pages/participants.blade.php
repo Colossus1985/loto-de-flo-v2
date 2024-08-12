@@ -42,7 +42,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($participants as $participant)
+                @foreach ($participants as $i => $participant)
                     <tr @if ( $participant->total_dispo < 0)
                             class="bg_color-negatif"
                         @elseif ( $participant->total_dispo == null || $participant->total_dispo == 0)
@@ -111,14 +111,16 @@
                                     class="my-green_light widht-full btn-sm btn-light me-3 ms-1 border ui-tooltip" 
                                     title="crediter" 
                                     data-bs-toggle="modal" 
-                                    data-bs-target="#modalAddMoney{{$participant->id_pseudo}}"
+                                    data-bs-target="#modalAddMoney{{$i}}"
+                                    data-participant-name="{{$participant->group_name}}"
                                     style="width: 100%;">
                                     ➕</button>
                                 <button type="button" 
                                     class="widht-full btn-sm btn-light me-1 border ui-tooltip" 
                                     title="debiter" 
                                     data-bs-toggle="modal" 
-                                    data-bs-target="#modalDebitMoney{{$participant->id_pseudo}}"
+                                    data-bs-target="#modalDebitMoney{{$i}}"
+                                    data-participant-name="{{$participant->group_name}}"
                                     style="width: 100%;">
                                     ➖</button>
                             </div>

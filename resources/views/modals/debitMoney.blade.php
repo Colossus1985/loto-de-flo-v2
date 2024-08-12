@@ -1,6 +1,6 @@
-<div class="modal fade" id="modalDebitMoney{{$participant->id_pseudo}}" tabindex="-1" aria-labelledby="{{$participant->id_pseudo}}" aria-hidden="true">
+<div class="modal fade" id="modalDebitMoney{{$i}}" tabindex="-1" aria-labelledby="{{$i}}" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content" style="width: 115%; !important">
+        <div class="modal-content" style="width: 125%; !important">
             <div class="modal-header">
                 <div class="d-flex flex-row text-nowrap">
                     <h5 class="modal-title me-2" id="{{$participant->id_pseudo}}">💲💲 Retirer des Fonds de </h5>
@@ -18,9 +18,10 @@
                 ></button>
             </div>
             <div class="modal-body">
-                <form class="d-flex flex-row" method="POST" action="{{ route('debitMoney', $participant->id_pseudo) }}">
+                <form class="d-flex flex-row" method="POST" action="{{ route('debitMoney', [$participant->id_pseudo, $participant->group_name]) }}">
                     @csrf
                     <input name="input_pseudo" hidden readonly value="{{$participant->pseudo}}">
+                    <input name="input_group_name" hidden readonly value="{{$participant->group_name}}">
                     <div class="form-group form-floating mb-3 d-flex">
                         <input
                             type="number"

@@ -37,17 +37,22 @@ class moneyController extends Controller
      * ajout d'un montant en tant que gain ou crédit pour un participant
      * @param Request
      * @param int id du participant
+     * @param string nom du groupe
      */
     public function addMoney(Request $request, $id_participant)
     {
         $participant    = $this->participant->getParticipant('id', $id_participant);
         $money          = $this->money->getMoney('id_pseudo', $id_participant);
+        $group          = $this->groups->getGroup('nameGroup', [$request->input_group_name]);
         $credit         = $request->inputMontant;
         $pseudo         = $request->input_pseudo;
 
         $amount = $money[0]->amount;
+
         $amount = $amount + $credit;
+
         $totalAmount = $participant->totalAmount;
+
         $totalAmount = $totalAmount + $credit;
         
         $gain = $request->inputAddGain;
@@ -75,6 +80,8 @@ class moneyController extends Controller
             'amount'        => $amount,
             'creditGain'    => $creditGain,
             'credit'        => $credit,
+            'id_group'      => $group[0]->id,
+            'group_name'    => $group[0]->nameGroup,
         ];
         $res_insert_money = $this->money->insertMoney($champs);
         if ($res_insert_money['erreur']) {
@@ -83,19 +90,27 @@ class moneyController extends Controller
         }
 
         return redirect()->back()
-            ->with('success', $credit.'€ ajouté sur le compte de '. $pseudo);
+            ->with('success', ifNotZero($request->inputMontant, true, ' €', '.', ' ').' ajouté sur le compte de '. $pseudo .' du groupe '. $request->input_group_name);
     }
 
+    /**
+     * retire un montant en tant que gain ou crédit pour un participant
+     * @param Request
+     * @param int id du participant
+     * @param string nom du groupe
+     */
     public function debitMoney(Request $request, $id_participant)
     {
         $participant    = $this->participant->getParticipant('id', $id_participant);
         $money          = $this->money->getMoney('id_pseudo', $id_participant);
-        $credit         = $request->inputMontant;
+        $group          = $this->groups->getGroup('nameGroup', [$request->input_group_name]);
+        $debit          = $request->inputMontant;
         $pseudo         = $request->input_pseudo;
 
-        $debit = $request->inputMontant;
         $amount = $money[0]->amount;
+
         $amount = $amount - $debit;
+
         $totalAmount = $participant->totalAmount;
         
         $champs = [
@@ -113,6 +128,8 @@ class moneyController extends Controller
             'id_pseudo'     => $id_participant,
             'amount'        => $amount,
             'debit'         => $debit,
+            'id_group'      => $group[0]->id,
+            'group_name'    => $group[0]->nameGroup,
         ];
         $res_insert_money = $this->money->insertMoney($champs);
         if ($res_insert_money['erreur']) {
@@ -121,7 +138,7 @@ class moneyController extends Controller
         }
 
         return redirect()->back()
-            ->with('success', $debit.'€ retiré du compte de '. $pseudo);
+            ->with('success', ifNotZero($debit, true, ' €', '.', ' ').' retiré du compte de '. $pseudo .' du groupe '. $request->input_group_name);
     }
 
     /**
