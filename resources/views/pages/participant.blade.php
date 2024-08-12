@@ -242,33 +242,33 @@
                                 </div>
 
                                 <div class="form-group form-floating mb-3 me-3 flex-fill">
-                                    <input id="credit_{{ $i }}" class="form-control text-end fw-bold"
+                                    <input id="credit_{{ $i }}" class="form-control text-end fw-bold text-success"
                                         @if ($data['value_credit'] == 0.00 || $data['value_credit'] == null)
                                             value="0.00 €"
                                         @else
-                                            value="{{ ifNotZero($data['value_credit'], true, ' €', '.', ' ') }}"
+                                            value="+ {{ ifNotZero($data['value_credit'], true, ' €', '.', ' ') }}"
                                         @endif
                                     readonly>
                                     <label for="credit_{{ $i }}" class="text-nowrap">Crédit total</label>
                                 </div>
 
                                 <div class="form-group form-floating mb-3 me-3 flex-fill">
-                                    <input id="credit_{{ $i }}" class="form-control text-end fw-bold"
+                                    <input id="credit_{{ $i }}" class="form-control text-end fw-bold text-danger"
                                         @if ($data['value_debit'] == 0.00 || $data['value_debit'] == null)
                                             value="0.00 €"
                                         @else
-                                            value="{{ ifNotZero($data['value_debit'], true, ' €', '.', ' ') }}"
+                                            value="- {{ ifNotZero($data['value_debit'], true, ' €', '.', ' ') }}"
                                         @endif
                                     readonly>
-                                    <label for="credit_{{ $i }}" class="text-nowrap">Débit total</label>
+                                    <label for="credit_{{ $i }}" class="text-nowrap">Joué total</label>
                                 </div>
 
                                 <div class="form-group form-floating mb-3 me-3 flex-fill">
-                                    <input id="credit_{{ $i }}" class="form-control text-end fw-bold"
+                                    <input id="credit_{{ $i }}" class="form-control text-end fw-bold text-success"
                                         @if ($data['value_credit_gain'] == 0.00 || $data['value_credit_gain'] == null)
                                             value="0.00 €"
                                         @else
-                                            value="{{ ifNotZero($data['value_credit_gain'], true, ' €', '.', ' ') }}"
+                                            value="+ {{ ifNotZero($data['value_credit_gain'], true, ' €', '.', ' ') }}"
                                         @endif
                                     readonly>
                                     <label for="credit_{{ $i }}" class="text-nowrap">Gains totaux</label>

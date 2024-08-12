@@ -35,6 +35,16 @@ class ParticipantRepository
             $query = Participants::query()
                 ->where('actif', 1) 
                 ;
+        } elseif ($champ == 'nameGroup') {
+            $query = Participants::query()
+                ->where($champ, 'like', "%$value%")
+                ->where('actif', 1) 
+                ;
+        } elseif ($champ == 'group_id') {
+            $query = Participants::query()
+                ->where($champ, 'like', "%$value%")
+                ->where('actif', 1) 
+                ;
         } else {
             $query = Participants::query()
                 ->where($champ, $value)
@@ -201,34 +211,34 @@ class ParticipantRepository
 
     public function action($participant, $pseudo_fin, $pseudo_origin, $id_pseudo_unique)
     {
-        // $sum_amount         = 0;
-        // $sum_totalAmount    = 0;
-        // $array_group_id     = [];
-        // $array_group_name   = [];
-        // foreach ($participant as $data) {
-        //     $sum_amount         = $sum_amount + $data->amount;
-        //     $sum_totalAmount    = $sum_totalAmount + $data->totalAmount;
-        //     if ($data->group_id) {
-        //         $array_group_id     = array_merge($array_group_id, json_decode($data->group_id));
-        //         $array_group_name   = array_merge($array_group_name, json_decode($data->nameGroup));
-        //     }
-        // }
+        $sum_amount         = 0;
+        $sum_totalAmount    = 0;
+        $array_group_id     = [];
+        $array_group_name   = [];
+        foreach ($participant as $data) {
+            $sum_amount         = $sum_amount + $data->amount;
+            $sum_totalAmount    = $sum_totalAmount + $data->totalAmount;
+            if ($data->group_id) {
+                $array_group_id     = array_merge($array_group_id, json_decode($data->group_id));
+                $array_group_name   = array_merge($array_group_name, json_decode($data->nameGroup));
+            }
+        }
 
-        // $array_group_id     = json_encode($array_group_id);
-        // $array_group_name   = json_encode($array_group_name);
+        $array_group_id     = json_encode($array_group_id);
+        $array_group_name   = json_encode($array_group_name);
 
-        // $champs_participants = [
-        //     'pseudo'        => $pseudo_fin,
-        //     'group_id'      => $array_group_id,
-        //     'nameGroup'     => $array_group_name,
-        //     'amount'        => $sum_amount,
-        //     'totalAmount'   => $sum_totalAmount,
-        // ];
+        $champs_participants = [
+            'pseudo'        => $pseudo_fin,
+            'group_id'      => $array_group_id,
+            'nameGroup'     => $array_group_name,
+            'amount'        => $sum_amount,
+            'totalAmount'   => $sum_totalAmount,
+        ];
 
-        // $query = Participants::query()
-        //     ->where('pseudo', $pseudo_origin)
-        //     ;
-        // $query->update($champs_participants);
+        $query = Participants::query()
+            ->where('pseudo', $pseudo_origin)
+            ;
+        $query->update($champs_participants);
 
         //=== maj table money ======================================
         $champs_money = [

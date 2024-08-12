@@ -146,7 +146,9 @@ class moneyController extends Controller
      */
     public function debitAll(Request $request)
     {
-        $nameGroup = $request->inputNameGroup;
+        $nameGroup      = $request->inputNameGroup;
+        $group          = $this->groups->getGroup('nameGroup', [$request->inputNameGroup]);
+
         if (!$nameGroup || $nameGroup == '') {
             return redirect()->back()
                 ->with('error', 'indiquez le groupe qui joue, s\'il vous plait');
@@ -183,6 +185,8 @@ class moneyController extends Controller
                 'id_pseudo'     => $participant->id,
                 'debit'         => $debit,
                 'date'          => $request->inputDate,
+                'id_group'      => $group[0]->id,
+                'group_name'    => $group[0]->nameGroup,
             ];
             $res = $this->money->insertMoney($update_money);
             if ($res['erreur']) {
@@ -191,7 +195,14 @@ class moneyController extends Controller
             }
         }
 
+        $liste_pseudo = [];
+        foreach ($arrayParticipant as $data) {
+            $liste_pseudo[] = $data->pseudo;
+        }
+        // Convertir le tableau des pseudonymes en une chaîne
+        $liste_pseudo_str = implode(', ', $liste_pseudo);
+
         return redirect()->back()
-            ->with('success', $debit.' € retiré du(des) compte(s) du(des) Participant(s)');
+            ->with('success', $debit.' € retiré du(des) compte(s) de ' . $liste_pseudo_str . ' du groupe ' . $nameGroup);
     }
 }
