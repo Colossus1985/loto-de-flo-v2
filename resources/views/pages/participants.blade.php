@@ -10,11 +10,11 @@
     .bg_color-super {background-color: rgba(116, 255, 91, 0.541) !important;}
 </style>
 
-<div class="p-4">
-    <div>
-        <h3 class="p-3">Les participants</h3>
+<div class="card">
+    <div class="card-header">
+        <h3>Les participants</h3>
     </div>
-    <div class="box-body table-responsive bg-light rounded p-2">
+    <div class="card-body table-responsive bg-light rounded p-2">
         <table id="table_participants" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>
             <thead>
                 <tr>
@@ -150,77 +150,84 @@
                 </tr>
             </tfoot>
         </table>
-    </div>
 
-    <div class="my-3">
-        <div class="btn-group">
-            <button type="button" @if ( count($participants_del) > 0 ) data-toggle="collapse" data-target="#participants_delCollapse" aria-expanded="false" aria-controls="attenteCollapse" class="btn btn-danger" @else class="btn btn-primary" disabled @endif>
-                {{ count($participants_del) }} Participant(s) rendu inactif(s) @if ( count($participants_del) > 0 ) <i class="fa-solid fa-magnifying-glass-plus"></i> @endif
-            </button>
-        </div>
+        <button type="button" 
+            @if ( count($participants_del) > 0 ) 
+                data-toggle="collapse" 
+                data-target="#participants_delCollapse" 
+                aria-expanded="false" 
+                aria-controls="attenteCollapse" 
+                class="btn btn-danger my-3" 
+            @else 
+                class="btn btn-primary my-3" 
+                disabled 
+            @endif>
+            {{ count($participants_del) }} Participant(s) rendu inactif(s) @if ( count($participants_del) > 0 ) <i class="fa-solid fa-magnifying-glass-plus"></i> @endif
+        </button>
     </div>
-    
-    <div class="mt-3">
-        <div class="box collapse" id="participants_delCollapse">
-            <div class="box-body table-responsive">
-                <table id="table_participants_del" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>
-                    <thead>
-                        <tr>
-                            <th class="text-center">Pseudo</th>
-                            <th class="text-center">Disponible</th>
-                            <th class="text-center">Joué</th>
-                        </tr>
-                        <tr class="filterrow">
-                            <th class="a1_input-filter" data-column="2"><input type="text" placeholder="Recherche" style="width: 100%;"></th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($participants_del as $participant)
-                            <tr @if ( $participant->amount < 0)
-                                    class="bg_color-negatif"
-                                @elseif ( $participant->amount == null || $participant->amount == 0)
-                                    class="bg_color-null"
-                                @elseif ( $participant->amount <= 3.49)
-                                    class="bg_color-limit"
-                                @elseif ( $participant->amount < 10 && $participant->amount >= 3.5)
-                                    class="bg_color-ok"
-                                @else
-                                    class="bg_color-super"
-                                @endif
-                            >
-                                <td>
-                                    <a href="{{ route('participant', [$participant->id, $participant->actif]) }}" 
-                                        title="voir détails" 
-                                        class="ui-tooltip btn-sm btn-info d-flex justify-content-center align-items-center mt-1 text-decoration-none"
-                                        target="blanc">
-                                        {{ $participant->pseudo }}
-                                    </a>
-                                </td>
-        
-                                <td class="text-end pe-2" style="padding-top: 0.7rem;">
-                                    @if ( $participant->amount == 0)
-                                        0.00 € 
-                                    @else 
-                                        {{ ifNotZero($participant->amount, true, ' €', '.', ' ') }}
-                                    @endif
-                                </td>
-        
-                                <td class="text-end pe-2" style="padding-top: 0.7rem;">
-                                    @if ($participant->totalAmount == '' || $participant->totalAmount == 0)
-                                            0.00 €
-                                    @else 
-                                        {{ ifNotZero($participant->totalAmount, true, ' €', '.', ' ') }}
-                                    @endif
-                                </td>
-        
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
+</div>
+
+<div class="card collapse" id="participants_delCollapse">
+    <div class="card-header fw-bold fs-4">
+        <span>Particiapant(s) rendu inactif(v)(s)</span>
+    </div>
+    <div class="card-body table-responsive">
+        <table id="table_participants_del" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>
+            <thead>
+                <tr>
+                    <th class="text-center">Pseudo</th>
+                    <th class="text-center">Disponible</th>
+                    <th class="text-center">Joué</th>
+                </tr>
+                <tr class="filterrow">
+                    <th class="a1_input-filter" data-column="2"><input type="text" placeholder="Recherche" style="width: 100%;"></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($participants_del as $participant)
+                    <tr @if ( $participant->amount < 0)
+                            class="bg_color-negatif"
+                        @elseif ( $participant->amount == null || $participant->amount == 0)
+                            class="bg_color-null"
+                        @elseif ( $participant->amount <= 3.49)
+                            class="bg_color-limit"
+                        @elseif ( $participant->amount < 10 && $participant->amount >= 3.5)
+                            class="bg_color-ok"
+                        @else
+                            class="bg_color-super"
+                        @endif
+                    >
+                        <td>
+                            <a href="{{ route('participant', [$participant->id, $participant->actif]) }}" 
+                                title="voir détails" 
+                                class="ui-tooltip btn-sm btn-info d-flex justify-content-center align-items-center mt-1 text-decoration-none"
+                                target="blanc">
+                                {{ $participant->pseudo }}
+                            </a>
+                        </td>
+
+                        <td class="text-end pe-2" style="padding-top: 0.7rem;">
+                            @if ( $participant->amount == 0)
+                                0.00 € 
+                            @else 
+                                {{ ifNotZero($participant->amount, true, ' €', '.', ' ') }}
+                            @endif
+                        </td>
+
+                        <td class="text-end pe-2" style="padding-top: 0.7rem;">
+                            @if ($participant->totalAmount == '' || $participant->totalAmount == 0)
+                                    0.00 €
+                            @else 
+                                {{ ifNotZero($participant->totalAmount, true, ' €', '.', ' ') }}
+                            @endif
+                        </td>
+
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </div>
 

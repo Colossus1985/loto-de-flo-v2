@@ -17,21 +17,21 @@
     }
 </style>
 
-<div class="p-5">
-    <div class="d-flex flex-row mb-3">
+<div class="card">
+    <div class="card-header d-flex flex-row py-3">
         <h3>Ajouter un Gain 🥳🥳🥳🥳🥳🥳🥳🥳</h3>
     </div>
-    <div class="modal-body">
+    <div class="card-body">
         <form method="POST" action="{{ route('addGain') }}">
             @csrf
-            <div class="d-flex flex-row">
-                <div class="form-group form-floating mb-3 me-3 d-flex flex-column">
-                    <div class="form-group form-floating mb-3 d-flex flex-fill">
+            <div class="d-flex flex-column flex-md-row">
+                <div class="form-group form-floating mb-3 me-3 d-flex flex-column col-8">
+                    <div class="form-group form-floating mb-3 d-flex">
                         <input
                             type="number"
                             min="0"
                             step="0.01"
-                            class="form-control flex-fill border-gold"
+                            class="form-control border-gold text-end fs-4"
                             name="inputAmount"
                             id="floatingMontant"
                             value="{{ old('inputAmount') }}"
@@ -40,10 +40,10 @@
                         />
                         <label for="floatingMontant">Montant ➕ <span>€</span></label>
                     </div>
-                    <div class="form-group form-floating d-flex flex-fill">
+                    <div class="form-group form-floating d-flex">
                         <input
                             type="date"
-                            class="form-control flex-fill"
+                            class="form-control fs-4"
                             name="inputDate"
                             id="floatingDate"
                             value="<?php echo (new DateTime())->format('Y-m-d'); ?>"
@@ -52,23 +52,21 @@
                         />
                         <label for="floatingDate">Date</label>
                     </div>
-                    <div class="border border-3 rounded-3 px-3 d-flex flex-column flex-fill mt-3">
-                        <p class="my-1">Rajouter les gains au(x) participant(s)</br> du group choisit automatiquement?</p>
-                        <div class="d-flex flex-row flex-fill mb-2 justify-content-around">
-                            <input type="radio" class="btn-check flex-fill" name="inputAddGainAuto" id="info-outlined-yes" autocomplete="off" value="true" checked
-                                style="width: 40%">
-                            <label class="btn btn-outline-info" for="info-outlined-yes">Oui</label>
+                    <div class="border border-3 rounded-3 px-3 d-flex flex-column mt-3 flex-fill">
+                        <p class="my-1">Rajouter les gains au(x) participant(s) du group choisit automatiquement?</p>
+                        <div class="d-flex flex-row mb-2">
+                            <input type="radio" class="btn-check" name="inputAddGainAuto" id="info-outlined-yes" autocomplete="off" value="true" checked>
+                            <label class="btn btn-outline-info flex-fill me-0 me-md-2" for="info-outlined-yes">Oui</label>
 
-                            <input type="radio" class="btn-check flex-fill" name="inputAddGainAuto" id="info-outlined-no" autocomplete="off" value="false"
-                                style="width: 40%">
-                            <label class="btn btn-outline-info" for="info-outlined-no">Non</label>
+                            <input type="radio" class="btn-check" name="inputAddGainAuto" id="info-outlined-no" autocomplete="off" value="false">
+                            <label class="btn btn-outline-info flex-fill" for="info-outlined-no">Non</label>
                         </div>
                     </div>
                 </div>
 
                 <div class="border border-3 rounded-3 form-group form-floating mb-3 d-flex flex-fill flex-column">
-                    <div class="">
-                        <p class="mt-1 mb-2 ps-3">Choisir le groupe : </p>
+                    <div class="card-header mb-2">
+                        <span class="fw-bold">Choisir le groupe : </span>
                     </div>
                     @foreach ($groupsDispo as $group)
                         <div class="ms-3 form-check form-switch">

@@ -22,7 +22,7 @@
 
 /* Styling */
 .slider {
-    background: #FFC006;
+    background: #afaeeb;
     height: 30px;
     margin: auto;
     overflow: hidden;
@@ -32,7 +32,7 @@
 
 .slider::before,
 .slider::after {
-    background: linear-gradient(to right, #FFC006 0%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(to right, #afaeeb 0%, rgba(255, 255, 255, 0) 100%);
     content: "";
     height: 30px;
     position: absolute;
@@ -68,9 +68,13 @@
     width: 250px;
 }
 
+.main-header {
+    background-color: #afaeeb;
+}
+
 </style>
 
-<nav class="main-header navbar navbar-expand navbar-white navbar-light bg-warning">
+<nav class="main-header navbar navbar-expand">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
         <li class="nav-item">
@@ -81,13 +85,14 @@
         </li>
     </ul>
 
+    <span class="fw-bold fs-5 text-nowrap my-2">Fonds : </span>
     <div class="slider">
         <div class="slide-track-fonds">
             @foreach ($sommeFondsByGroups as $sommeFondsByGroup)
                 <div class="slide">
                     <div class="mx-3 d-flex justify-content-between align-items-center text-nowrap">
                         <h5 class="me-3">{{ $sommeFondsByGroup['nameGroup'] }} : </h5>
-                            <h5 class="text-info"> {{ $sommeFondsByGroup['fonds'] }} €</h5>
+                            <h5 class="text-primary"> {{ $sommeFondsByGroup['fonds'] }} €</h5>
                     </div>
                 </div>
             @endforeach
@@ -95,20 +100,21 @@
                 <div class="slide">
                     <div class="mx-3 d-flex justify-content-between align-items-center text-nowrap ">
                         <h5 class="me-3">{{ $sommeFondsByGroup['nameGroup'] }} : </h5>
-                        <h5 class="text-info"> {{ $sommeFondsByGroup['fonds'] }} €</h5>
+                        <h5 class="text-primary"> {{ $sommeFondsByGroup['fonds'] }} €</h5>
                     </div>
                 </div>
             @endforeach
         </div>
     </div>
 
+    <span class="fw-bold fs-5 text-nowrap my-2">Gains : </span>
     <div class="slider">
         <div class="slide-track-gains">
             @foreach ($sommeGainsByGroups as $sommeGainsByGroup)
                 <div class="slide">
                     <div class="mx-3 d-flex justify-content-between align-items-center text-nowrap">
                         <h5 class="me-3">{{ $sommeGainsByGroup['nameGroup'] }} :</h5>
-                        <h5 class="text-info"> {{ $sommeGainsByGroup['sommeGains'] }} €,</h5>
+                        <h5 class="text-primary"> {{ $sommeGainsByGroup['sommeGains'] }} €,</h5>
                     </div>
                 </div>
             @endforeach
@@ -116,7 +122,7 @@
                 <div class="slide">
                     <div class="mx-3 d-flex justify-content-between align-items-center text-nowrap">
                         <h5 class="me-3">{{ $sommeGainsByGroup['nameGroup'] }} :</h5>
-                        <h5 class="text-info"> {{ $sommeGainsByGroup['sommeGains'] }} €,</h5>
+                        <h5 class="text-primary"> {{ $sommeGainsByGroup['sommeGains'] }} €,</h5>
                     </div>
                 </div>
             @endforeach

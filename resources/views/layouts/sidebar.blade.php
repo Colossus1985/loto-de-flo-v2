@@ -15,9 +15,9 @@ $user_ok = $local ? true : $user_ok;
 <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-info elevation-4">
     <!-- Brand Logo -->
-    <a href="/" class="ps-3 brand-link">
-      <img src="{{asset('img/logo-dl-rs.png')}}" alt="Digilife" class="brand-image img-circle elevation-3">
-      <span class="brand-text ms-4">WEB</span>
+    <a href="/" class="ps-3 brand-link text-decoration-none">
+      <img src="{{asset('img/logo_lotov2.png')}}" alt="Digilife" class="brand-image rounded">
+      <span class="ms-2">de FLO</span>
     </a>
 
     <!-- Sidebar -->

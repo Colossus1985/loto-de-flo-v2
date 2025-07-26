@@ -24,10 +24,10 @@
     }
 </style>
 
-<div class="p-5">
-    <div class="mt-0">
-        <div class="d-flex flex-row justify-content-between mb-3">
-            <div class="d-flex flex-row">
+<div class="card">
+    <div class="card-header mb-3">
+        <div class="d-flex flex-row justify-content-between my-3">
+            <div>
                 <h2>Historique des gains 🥳🥳🥳🥳🥳🥳🥳🥳🥳</h2>
             </div>
             <div>
@@ -36,72 +36,72 @@
                 </button>
             </div>
         </div>
+    </div>
         
-        <div class="box-body table-responsive bg-light p-2 rounded">
-            <table id="table_gainsHistory" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>
-                <thead>
+    <div class="card-body table-responsive bg-light p-2 rounded">
+        <table id="table_gainsHistory" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>
+            <thead>
+                <tr>
+                    <th class="text-center">Date</th>
+                    <th class="text-center">Groupe</th>
+                    <th class="text-center">Gain</th>
+                    <th class="text-center">Nb Participants</th>
+                    <th class="text-center">Gain individuel</th>
+                </tr>
+                <tr class="filterrow">
+                    <th></th>
+                    <th class="select-filter">
+                        <select id="s1-filter" placeholder="Recherche" style="width: 100%; height:1.7rem;">
+                            <option value="">Tous</option>
+                        </select>
+                    </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($gains as $gain)
                     <tr>
-                        <th class="text-center">Date</th>
-                        <th class="text-center">Groupe</th>
-                        <th class="text-center">Gain</th>
-                        <th class="text-center">Nb Participants</th>
-                        <th class="text-center">Gain individuel</th>
+                        <td class="text-center align-middle">
+                            <span>{{ sql2display($gain->date) }}</span>
+                        </td>
+                        <td>{{ $gain->nameGroup }}</td>
+                        <td class="text-end align-middle fw-bold">
+                            @if ($gain->amount == 0)
+                                <span>0.00 €</span>
+                            @else
+                                <span>{{ ifNotZero($gain->amount, true, ' €', '.', ' ') }} </span>
+                            @endif
+                        </td>
+                        <td class="text-end align-middle">
+                            <span>{{ $gain->nbPersonnes }}</span>
+                        </td>
+                        <td class="text-end align-middle fw-bold">
+                            @if ($gain->gainIndividuel == 0)
+                                <span>0.00 €</span>
+                            @else
+                                <span>{{ ifNotZero($gain->gainIndividuel, true, ' €', '.', ' ') }} </span>
+                            @endif
+                        </td>
                     </tr>
-                    <tr class="filterrow">
-                        <th></th>
-                        <th class="select-filter">
-                            <select id="s1-filter" placeholder="Recherche" style="width: 100%; height:1.7rem;">
-                                <option value="">Tous</option>
-                            </select>
-                        </th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($gains as $gain)
-                        <tr>
-                            <td class="text-center align-middle">
-                                <span>{{ sql2display($gain->date) }}</span>
-                            </td>
-                            <td>{{ $gain->nameGroup }}</td>
-                            <td class="text-end align-middle fw-bold">
-                                @if ($gain->amount == 0)
-                                    <span>0.00 €</span>
-                                @else
-                                    <span>{{ ifNotZero($gain->amount, true, ' €', '.', ' ') }} </span>
-                                @endif
-                            </td>
-                            <td class="text-end align-middle">
-                                <span>{{ $gain->nbPersonnes }}</span>
-                            </td>
-                            <td class="text-end align-middle fw-bold">
-                                @if ($gain->gainIndividuel == 0)
-                                    <span>0.00 €</span>
-                                @else
-                                    <span>{{ ifNotZero($gain->gainIndividuel, true, ' €', '.', ' ') }} </span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-                <tfoot>
-                    <tr id="tot-gen">
-                        <th colspan="2"><h4>Gains page</h4></th>
-                        <th class="text-right"><h4 id="c1"></h4></th>
-                        <th></th>
-                        <th></th>
-                    </tr>                            
-                    <tr>
-                        <th colspan="2"><h4>Gains totaux</h4></th>
-                        <th class="text-right border-gold"><h4 id="t1"></h4></th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr id="tot-gen">
+                    <th colspan="2"><h4>Gains page</h4></th>
+                    <th class="text-right"><h4 id="c1"></h4></th>
+                    <th></th>
+                    <th></th>
+                </tr>                            
+                <tr>
+                    <th colspan="2"><h4>Gains totaux</h4></th>
+                    <th class="text-right border-gold"><h4 id="t1"></h4></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
     </div>
 </div>
 

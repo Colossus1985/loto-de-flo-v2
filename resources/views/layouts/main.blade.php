@@ -20,7 +20,7 @@
         @include('layouts.navbar')
         @include('layouts.sidebar')
         <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
+        <div class="content-wrapper px-4 py-3">
 
           <!-- Main content -->
             <section class="content">

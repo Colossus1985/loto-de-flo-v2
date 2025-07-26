@@ -7,6 +7,8 @@ use App\Models\Groups;
 use App\Models\Money;
 use App\Models\Participants;
 
+use App\Repositories\ParticipantRepository;
+
 use Illuminate\Database\QueryException;
 use Exception;
 use DB;
@@ -90,7 +92,8 @@ class MoneyRepository
     }
 
     /**
-     * récupérer le fond des groups
+     * récupération de des fonds de chaque groupe
+     * @param array objets group
      */
     public function fonds($groups)
     {
@@ -98,7 +101,7 @@ class MoneyRepository
         if (count($groups) > 0) {
             foreach ($groups as $i => $group) {
                 $query = Participants::query()
-                    ->where('nameGroup', '=', $group->nameGroup)
+                    ->where('nameGroup', 'like', '%'.$group->nameGroup.'%')
                     ;
                 $participantsOfGroup = $query->get();
 
@@ -107,6 +110,7 @@ class MoneyRepository
                     foreach ($participantsOfGroup as $i2 => $participantOfGroup) {
                         $fonds = $fonds + $participantOfGroup->amount;
                     }
+                    
                     $fonds = ifNotZero($fonds, true, false, '.', ' ', 2, true);
                     array_push($arrayFondsByGroup, ['nameGroup' => $group->nameGroup, 'fonds' => $fonds]);
                 }
@@ -141,6 +145,10 @@ class MoneyRepository
     }
 
 
+    /**
+     * récupération des gains de chaque groupe
+     * @param array objets group
+     */
     function gains($groups)
     {
         $arrayGainByGroup = [];

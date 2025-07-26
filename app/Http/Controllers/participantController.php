@@ -10,6 +10,10 @@ use Symfony\Component\HttpFoundation\Request;
 
 class participantController extends Controller
 {
+    protected $participant;
+    protected $groups;
+    protected $money;
+
     public function __construct(
         ParticipantRepository $participant,
         GroupsRepository $groups,
@@ -18,7 +22,7 @@ class participantController extends Controller
     {
         $this->participant      = $participant;
         $this->groups           = $groups;
-        $this->money             = $money;
+        $this->money            = $money;
     }
 
     /**
@@ -175,7 +179,7 @@ class participantController extends Controller
                 ->with('erreur', $res_maj_participant['message']);
         }
 
-        return redirect()->route('participants')
+        return redirect()->route('participant', ['idParticipant' => $id_articipant, 'actif' => 0])
                 ->with('success', $participant->pseudo.' a été rendu inactif(ve) avec succès!');
 
     }
@@ -194,7 +198,7 @@ class participantController extends Controller
         }
         $pseudo = $participant->pseudo;
 
-        return redirect()->route('participants')
+        return redirect()->route('participant', ['idParticipant' => $id_articipant, 'actif' => 1])
                 ->with('success', $pseudo.' a été rendu actif(ve)!');
 
     }

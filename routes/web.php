@@ -8,7 +8,7 @@ use App\Http\Controllers\participantController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('dashbord'                                           , [logController::class, 'dashbord'])                       ->name('dashbord');
+Route::get(''                                           , [logController::class, 'dashbord'])                       ->name('dashbord');
 
 Route::get('participants/participant/{idParticipant}/{actif}'   , [participantController::class, 'getParticipant'])         ->name('participant');
 Route::post('participants/updateParticipant/{idParticipant}'    , [participantController::class, 'updateParticipant'])      ->name('updateParticipant');
@@ -34,7 +34,7 @@ Route::get('group/participantGroup/delete/{idParticipant}'      , [groupsControl
 Route::get('group/delete/{id_group}/{nameGroup}'                , [groupsController::class, 'groupDelete'])                 ->name('groupDelete');
 Route::get('group/rallume/{id_group}'                           , [groupsController::class, 'groupRallume'])                ->name('groupRallume');
 
-Route::get('log/get-group-data/{name_groupe}'                   , [gainController::class, 'getGroupData']);
+Route::get('log/get-group-data/{name_groupe}'                   , [logController::class, 'getGroupData']);
 
 //=== migration -> v3
 Route::get('ajoutGroupInGain', [gainController::class, 'ajoutGroupInGain']);
