@@ -37,17 +37,17 @@
                 </div>
                 <div class="col-12 col-md-4 border rounded form-group form-floating mb-3 d-flex flex-column">
                     <div class="card-header">
-                        <span class="fw-bold">Choisis le ou les Group(s) : </span>
+                        <span class="fw-bold">Choisis un Group : </span>
                     </div>
                     <div class="card-body">
                         @foreach ($groups as $i => $group)
                             <div class="form-check form-switch">
                                 <input class="form-check-input me-3"
-                                    type="checkbox" 
+                                    type="radio" 
                                     name="inputNameGroup[]"
-                                    role="switch" 
                                     id="flexSwitchNameGroup_{{$i}}" 
-                                    value="{{ $group->nameGroup }}">
+                                    value="{{ $group->nameGroup }}"
+                                    required>
                                 <label class="form-check-label" for="flexSwitchNameGroup_{{$i}}">{{ $group->nameGroup }}</label>
                             </div>
                         @endforeach

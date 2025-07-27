@@ -3,7 +3,7 @@
         <div class="modal-content" style="width: 125%; !important">
             <div class="modal-header">
                 <div class="d-flex flex-row text-nowrap">
-                    <h5 class="modal-title me-2" id="{{$participant->id_pseudo}}">💲💲 Ajouter des Fonds pour </h5>
+                    <h5 class="modal-title me-2" id="{{$participant->id}}">💲💲 Ajouter des Fonds pour </h5>
                     <h5 class="modal-title text-info mb-0">{{$participant->pseudo}}</h5>
                     <h5 class="modal-title ">&nbsp; du groupe &nbsp;</h5>
                     <h5 class="modal-title text-danger mb-0">{{ $participant->group_name }}</h5>
@@ -17,7 +17,7 @@
                 ></button>
             </div>
             <div class="modal-body">
-                <form class="d-flex flex-row" method="POST" action="{{ route('addMoney', $participant->id_pseudo) }}">
+                <form class="d-flex flex-row" method="POST" action="{{ route('addMoney', $participant->id) }}">
                     @csrf
                     <input name="input_pseudo" hidden readonly value="{{$participant->pseudo}}">
                     <input name="input_group_name" hidden readonly value="{{$participant->group_name}}">

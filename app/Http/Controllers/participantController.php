@@ -49,10 +49,14 @@ class participantController extends Controller
                 //=== on vérifie si le participant est associé encore au groupe
                 if (in_array($data->id_group, $array_groups_id)) {
                     $group_name = $data->group_name;
-                
+
                     $totale_value       = $data->credit + $data->creditGain - $data->debit;
                     $value_credit       = $data->credit;
-                    $value_debit        = $data->debit;
+                    if ($data->correction) {
+                        $value_debit        = 0;
+                    } else {
+                        $value_debit        = $data->debit;
+                    }
                     $value_credit_gain  = $data->creditGain;
                     
                     // Si le group_name n'existe pas encore dans le tableau, l'initialiser
@@ -71,6 +75,7 @@ class participantController extends Controller
                     $sommes[$group_name]['value_debit']         += $value_debit;
                     $sommes[$group_name]['value_credit_gain']   += $value_credit_gain;
                     $sommes[$group_name]['group_name']          = $group_name;
+                    $sommes[$group_name]['group_id']            = $data->id_group;
                 }
                 
             }
@@ -152,10 +157,10 @@ class participantController extends Controller
 
         if ($resInsert['erreur']) {
             return redirect()->back()
-                ->with('success', $pseudo." enregistré(e) avec succès !");
+                ->with('error', $resInsert['message']);
         } else {
             return redirect()->back()
-                ->with('error', $resInsert['message']);
+                ->with('success', $resInsert['message']);
         }
         
     }

@@ -111,18 +111,26 @@ class groupsController extends Controller
 
         $group_ids      = [];
         $group_names    = [];
-        foreach ($groups as $data) {
-            $group_ids[]    = $data->id;
-            $group_names[]  = $data->nameGroup;
-            $res = $this->money->historique_exist($data->id, $data->nameGroup, $id_participant);
+        if ($groups) {
+            foreach ($groups as $data) {
+                $group_ids[]    = $data->id;
+                $group_names[]  = $data->nameGroup;
+                $res = $this->money->historique_exist($data->id, $data->nameGroup, $id_participant);
+            }
+            $group_ids_json     = json_encode($group_ids);
+            $group_names_json   = json_encode($group_names, JSON_UNESCAPED_UNICODE);
+    
+            $champs = [
+                'group_id'      => $group_ids_json,
+                'nameGroup'     => $group_names_json,
+            ];
+        } else {
+            $champs = [
+                'group_id'      => json_encode($group_ids),
+                'nameGroup'     => json_encode($group_names),
+            ];
         }
-        $group_ids_json     = json_encode($group_ids);
-        $group_names_json   = json_encode($group_names);
-
-        $champs = [
-            'group_id'      => $group_ids_json,
-            'nameGroup'     => $group_names_json,
-        ];
+        
 
         $res_update_participant = $this->participant->updateParticipant($champs, $id_participant);
         

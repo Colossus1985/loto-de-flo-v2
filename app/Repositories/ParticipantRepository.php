@@ -32,29 +32,48 @@ class ParticipantRepository
     public function getParticipants($champ = '', $value = '')
     {
         if ($champ == '') {
-            $query = Participants::query()
-                ->where('actif', 1) 
-                ;
+            // Pas de filtre spécial, on récupère le builder
+            $query = Participants::where('actif', 1);
+            $res = $query->get(); // On récupère ici
         } elseif ($champ == 'nameGroup') {
-            $query = Participants::query()
-                ->where($champ, 'like', "%$value%")
-                ->where('actif', 1) 
-                ;
+            // Récupérer tous les participants actifs (collection)
+            $query = Participants::where('actif', 1)->get();
+    
+            // Filtrage avec json_decode
+            $filtered = $query->filter(function ($participant) use ($value) {
+                $groupes = json_decode($participant->nameGroup, true);
+    
+                if (is_array($groupes)) {
+                    return in_array($value, $groupes);
+                }
+    
+                return false;
+            })->values();
+    
+            $res = $filtered;
         } elseif ($champ == 'group_id') {
-            $query = Participants::query()
-                ->where($champ, 'like', "%$value%")
-                ->where('actif', 1) 
-                ;
+            // Idem pour group_id
+            $query = Participants::where('actif', 1)->get();
+    
+            $filtered = $query->filter(function ($participant) use ($value) {
+                $groupes = json_decode($participant->group_id, true);
+    
+                if (is_array($groupes)) {
+                    return in_array($value, $groupes);
+                }
+    
+                return false;
+            })->values();
+    
+            $res = $filtered;
         } else {
-            $query = Participants::query()
-                ->where($champ, $value)
-                ->where('actif', 1) 
-                ;
+            $query = Participants::where($champ, $value)->where('actif', 1);
+            $res = $query->get();
         }
-        $res = $query->get();
-        
+    
         return $res;
     }
+    
 
     /**
      * récupérer un participant en particulier
@@ -101,9 +120,9 @@ class ParticipantRepository
             $group_names[]  = $data->nameGroup;
         }
         $group_ids_json     = json_encode($group_ids);
-        $group_names_json   = json_encode($group_names);
+        $group_names_json   = json_encode($group_names, JSON_UNESCAPED_UNICODE);
 
-        $message    = "$request->pseudo ajouté avec succès !";
+        $message    = "$request->inputPseudo a été ajouté(e) avec succès !";
 
         try {
             // Création d'un nouveau participant
@@ -111,7 +130,7 @@ class ParticipantRepository
             $participant->firstName = $request->input('inputFirstName');
             $participant->lastName = $request->input('inputLastName');
             $participant->nameGroup = $group_names_json;
-            $participant->groupId = $group_ids_json;
+            $participant->group_id = $group_ids_json;
             $participant->pseudo = $request->input('inputPseudo');
             $participant->email = $request->input('inputEmail');
             $participant->tel = $request->input('inputTel');
@@ -126,11 +145,15 @@ class ParticipantRepository
         }
 
         try {
-            $participant = $this->getParticipant('pseudo', $request->pseudo);
+            $participant = $this->getParticipant('pseudo', $request->input('inputPseudo'));
             $id_pseudo = $participant->id;
             $money = new Money();
-            $money->pseudo = $request->inputPseudo;
-            $money->id_pseudo = $id_pseudo;
+            $money->pseudo      = $request->inputPseudo;
+            $money->id_pseudo   = $id_pseudo;
+            $money->id_group    = json_decode($group_ids_json)[0];
+            $money->group_name  = json_decode($group_names_json)[0];
+            $money->date        = now();
+            $money->save();
         } catch (QueryException $e) {
             // Gestion des erreurs de base de données
             return ['erreur' => true, 'message' => 'Erreur de base de données : ' . $e->getMessage()];

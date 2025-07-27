@@ -12,6 +12,7 @@
  * @param boolean $zero affichage de '0' si valeur nulle malgré tout
  * @return type
  */
+
 function ifNotZero($val, $format=false, $suffixe=null, $virgule='.', $millier=' ', $nb_decim=2, $zero=false)
 {
     if ($val != 0 || $zero) {

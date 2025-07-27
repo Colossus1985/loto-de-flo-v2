@@ -10,6 +10,10 @@ use Illuminate\Http\Request;
 
 class moneyController extends Controller
 {
+    protected $participant;
+    protected $groups;
+    protected $money;
+
     public function __construct(
         ParticipantRepository $participant,
         GroupsRepository $groups,
@@ -104,6 +108,7 @@ class moneyController extends Controller
         $participant    = $this->participant->getParticipant('id', $id_participant);
         $money          = $this->money->getMoney('id_pseudo', $id_participant);
         $group          = $this->groups->getGroup('nameGroup', [$request->input_group_name]);
+        $correction     = isset($request->input_correction) ? $request->input_correction : 0;
         $debit          = $request->inputMontant;
         $pseudo         = $request->input_pseudo;
 
@@ -130,6 +135,8 @@ class moneyController extends Controller
             'debit'         => $debit,
             'id_group'      => $group[0]->id,
             'group_name'    => $group[0]->nameGroup,
+            'date'          => now(),
+            'correction'    => $correction,
         ];
         $res_insert_money = $this->money->insertMoney($champs);
         if ($res_insert_money['erreur']) {
@@ -148,14 +155,13 @@ class moneyController extends Controller
     {
         $nameGroup      = $request->inputNameGroup;
         $group          = $this->groups->getGroup('nameGroup', [$request->inputNameGroup]);
-
+        
         if (!$nameGroup || $nameGroup == '') {
             return redirect()->back()
                 ->with('error', 'indiquez le groupe qui joue, s\'il vous plait');
         }
 
-        $arrayParticipant = $this->participant->getParticipants('nameGroup', $nameGroup);
-
+        $arrayParticipant = $this->participant->getParticipants('group_id', $group[0]->id);
         $debitValue = $request->inputAmount;
         $nbPersonnes = count($arrayParticipant);
         $debitIndividuel = bcdiv($debitValue, $nbPersonnes, 2); //downRounding 0.9999 = 0.99

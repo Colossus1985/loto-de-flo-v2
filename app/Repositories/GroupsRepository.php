@@ -41,12 +41,18 @@ class GroupsRepository
      */
     public function getGroup($champ, $valeur)
     {
-        $query = Groups::query()
-            ->whereIn($champ, $valeur)
-            ;
-        $res = $query->get();
+        if ($champ && $valeur) {
+            $query = Groups::query()
+                ->whereIn($champ, $valeur)
+                ;
+            $res = $query->get();
 
-        return $res;
+            return $res;
+        } else {
+            return false;
+        }
+
+        
     }
 
     /**
@@ -166,7 +172,7 @@ class GroupsRepository
 
                     // Reconvertir les tableaux en JSON
                     $participant->group_id = json_encode($group_ids);
-                    $participant->nameGroup = json_encode($group_names);
+                    $participant->nameGroup = json_encode($group_names, JSON_UNESCAPED_UNICODE);
 
                     // Mettre à jour la ligne dans la base de données
                     if (!$participant->save()) {

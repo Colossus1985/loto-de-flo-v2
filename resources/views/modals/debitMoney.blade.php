@@ -7,7 +7,7 @@
                     <h5 class="modal-title text-info mb-0">{{$participant->pseudo}}</h5>
                     <h5 class="modal-title ">&nbsp; du groupe &nbsp;</h5>
                     <h5 class="modal-title text-danger mb-0">{{ $participant->group_name }}</h5>
-                    <h5 class="modal-title ">&nbsp; 💲💲</h5>
+                    <h5 class="modal-title ">&nbsp; pour correction 💲💲</h5>
                 </div>
                 
                 <button
@@ -22,6 +22,7 @@
                     @csrf
                     <input name="input_pseudo" hidden readonly value="{{$participant->pseudo}}">
                     <input name="input_group_name" hidden readonly value="{{$participant->group_name}}">
+                    <input name="input_correction" hidden readonly value="1">
                     <div class="form-group form-floating mb-3 d-flex">
                         <input
                             type="number"

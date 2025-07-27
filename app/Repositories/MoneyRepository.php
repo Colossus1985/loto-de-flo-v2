@@ -92,7 +92,7 @@ class MoneyRepository
     }
 
     /**
-     * récupération de des fonds de chaque groupe
+     * récupération des fonds de chaque groupe
      * @param array objets group
      */
     public function fonds($groups)
@@ -116,34 +116,10 @@ class MoneyRepository
                 }
             }
         }   
+
+        // dd($arrayFondsByGroup);
         return $arrayFondsByGroup;
     }
-
-    /**
-     * récupérer le récap de tous les participants actif
-     */
-    public function getJeux()
-    {
-        $query = Money::select(
-            'money.id_pseudo',
-            'money.pseudo',
-            'money.id_group',
-            'money.group_name',
-            DB::raw('SUM(money.credit) AS total_credit'),
-            DB::raw('SUM(money.creditGain) AS total_gain'),
-            DB::raw('SUM(money.debit) AS total_jouee'),
-            DB::raw('(SUM(money.credit) + SUM(money.creditGain)) - SUM(money.debit) AS total_dispo')
-        )
-        ->join('participants', 'money.id_pseudo', '=', 'participants.id')
-        ->where('participants.actif', 1)
-        ->whereNotNull('money.id_group')
-        ->groupBy('money.id_pseudo', 'money.pseudo', 'money.id_group', 'money.group_name');
-    
-        $res = $query->get();
-
-        return $res;
-    }
-
 
     /**
      * récupération des gains de chaque groupe
@@ -171,6 +147,48 @@ class MoneyRepository
             }
         }
         return $arrayGainByGroup;
+    }
+
+    /**
+     * récupérer le récap de tous les participants actif
+     */
+    public function getJeux()
+    {
+        $query = Money::select(
+            'money.id_pseudo',
+            'money.pseudo',
+            'money.id_group',
+            'money.group_name',
+            'participants.id',
+            DB::raw('SUM(money.credit) - SUM(CASE WHEN money.correction = 1 THEN money.debit ELSE 0 END) AS total_credit'),
+            DB::raw('SUM(money.creditGain) AS total_gain'),
+            DB::raw('SUM(CASE WHEN money.correction = 0 THEN money.debit ELSE 0 END) AS total_jouee'),
+            DB::raw('(SUM(money.credit) + SUM(money.creditGain)) - SUM(money.debit) AS total_dispo')
+        )
+        ->join('participants', 'money.id_pseudo', '=', 'participants.id')
+        ->where('participants.actif', 1)
+        ->whereNotNull('money.id_group')
+        ->groupBy('money.id_pseudo', 'money.pseudo', 'money.id_group', 'money.group_name', 'participants.id');
+    
+        $res = $query->get();
+
+        return $res;
+    }
+
+    /**
+     * Récuération de la somme des corrections
+     * @param string id groupe
+     * @param string id participant
+     */
+    public function getCorrections(int $id_group, int $id_participant)
+    {
+        $res = Money::select(
+                    DB::raw('SUM(CASE WHEN money.correction = 1 THEN money.debit ELSE 0 END) AS correction')
+                )
+                ->where('id_group', $id_group)
+                ->where('id_pseudo', $id_participant)
+                ->get();
+        return $res;
     }
 
 }

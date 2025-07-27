@@ -263,7 +263,7 @@
                 "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
             }
         },
-        lengthMenu: [[10, 15, 20, 50, 100, 150, -1], [10, 15, 20, 50, 100, 150, "tous les"]],
+        lengthMenu: [[30, 15, 20, 50, 100, 150, -1], [30, 15, 20, 50, 100, 150, "tous les"]],
         colReorder: true,
         select: true,
         bSortCellsTop: true,

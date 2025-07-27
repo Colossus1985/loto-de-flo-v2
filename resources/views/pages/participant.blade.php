@@ -16,12 +16,26 @@
     <div class="card-header">
         <div class="d-flex col-12 col-md-6">
             <h3 class="mb-3 py-1 px-2 flex-fill @if (!$participant->actif) bg_color-negatif @else bg_color-super @endif rounded">
-                {{ $participant->pseudo }} ({{ $participant->firstName }} {{ $participant->firstName }}) 
+                {{ $participant->pseudo }} ({{ $participant->firstName }} {{ $participant->lastName }}) 
                 @if (!$participant->actif) <span>NON ACTIF(VE)</span> @endif
             </h3>
         </div>
         <div class="d-flex flex-column flex-md-row justify-content-between col-12">
             <div class="d-flex flex-wrap">
+
+                <div class="my-3 me-3">
+                    <div class="btn-group">
+                        <button     type="button" 
+                                    data-bs-toggle="collapse" 
+                                    data-bs-target="#resume_Collapse" 
+                                    aria-expanded="true" 
+                                    aria-controls="resume_Collapse" 
+                                    class="btn btn-info text-nowrap">
+                            Résumée
+                        </button>
+                    </div>
+                </div>
+
                 <div class="my-3 me-3">
                     <div class="btn-group">
                         <button     type="button" 
@@ -70,7 +84,6 @@
             </div>
         </div>
     </div>
-    
 
     <div class="collapse" id="details_Collapse">
         <div class="card-body d-flex flex-column flex-md-row">
@@ -173,7 +186,7 @@
                         @csrf
                         <div class="d-flex flex-column"  style="height: 100%">
                             <div class="card-header mb-2">
-                                <span class="fw-bold">Changer le Groupe : </span>
+                                <span class="fw-bold">Définir le(s) Groupe(s) : </span>
                             </div>
 
                             <div class="d-flex flex-column flex-fill"  style="height: 100%">
@@ -217,11 +230,10 @@
             </div>
         </div>
     </div>
-    
 
-    <div class="card-body collapse show" id="historique_Collapse">
+    <div class="card-body collapse show" id="resume_Collapse">
         <div class="card-header mb-3">
-            <h4>Historique des mouvement monetaire</h4>
+            <h4>Résumée</h4>
         </div>
         @if ($sommes)
             <div class="mb-3 d-flex flex-wrap table-responsive">
@@ -293,6 +305,12 @@
                 @endforeach
             </div>
         @endif
+    </div>
+    
+    <div class="card-body collapse" id="historique_Collapse">
+        <div class="card-header mb-3">
+            <h4>Historique des mouvement monetaire</h4>
+        </div>
 
         <div class="bg-light rounded p-3">
             <table id="table_participant" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>
@@ -318,26 +336,38 @@
                 </thead>
                 <tbody>
                     @foreach ($actions as $action)
-                        <tr>
+                        <tr @if ($action->correction) class="table-secondary" title="correction de fond!" @endif>
                             <td class="fw-bold text-center">{{ sql2display($action->created_at) }}</td>
                             <td class="fw-bold text-center">{{ $action->group_name }}</td>
                             
-                            @if ( $action->credit >= 0.01 )
-                                <td class="bg_color-super text-end fw-bold" >{{ ifNotZero($action->credit, true, ' €', '.', ' ') }}</td>
+                            @if (!$action->correction)
+                                @if ( $action->credit >= 0.01 )
+                                    <td class="bg_color-super text-end fw-bold" >{{ ifNotZero($action->credit, true, ' €', '.', ' ') }}</td>
+                                @else
+                                    <td class="text-end fw-bold visible_non">0.00 €</td>
+                                @endif
                             @else
-                                <td class="text-end fw-bold visible_non">0.00 €</td>
+                                <td class="text-end fw-bold">{{ ifNotZero($action->credit, true, ' €', '.', ' ') }}</td>
                             @endif
 
-                            @if ( $action->debit >= 0.01 )
-                                <td class="bg_color-limit text-end fw-bold">{{ ifNotZero($action->debit, true, ' €', '.', ' ') }}</td>
+                            @if (!$action->correction)
+                                @if ( $action->debit >= 0.01 )
+                                    <td class="bg_color-limit text-end fw-bold">{{ ifNotZero($action->debit, true, ' €', '.', ' ') }}</td>
+                                @else
+                                    <td class="text-end fw-bold visible_non">0.00 €</td>
+                                @endif
                             @else
-                                <td class="text-end fw-bold visible_non">0.00 €</td>
+                                <td class="text-end fw-bold">{{ ifNotZero($action->debit, true, ' €', '.', ' ') }}</td>
                             @endif
 
-                            @if ( $action->creditGain >= 0.01 )
-                                <td class="bg_color-super text-end fw-bold">{{ ifNotZero($action->creditGain, true, ' €', '.', ' ') }}</td>
+                            @if (!$action->correction)
+                                @if ( $action->creditGain >= 0.01 )
+                                    <td class="bg_color-super text-end fw-bold">{{ ifNotZero($action->creditGain, true, ' €', '.', ' ') }}</td>
+                                @else
+                                    <td class="text-end fw-bold visible_non">0.00 €</td>
+                                @endif
                             @else
-                                <td class="text-end fw-bold visible_non">0.00 €</td>
+                                <td class="text-end fw-bold">{{ ifNotZero($action->creditGain, true, ' €', '.', ' ') }}</td>
                             @endif
                         </tr>
                     @endforeach
