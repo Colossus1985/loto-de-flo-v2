@@ -7,6 +7,8 @@
 
 <script src="{{asset('js/datatable.js')}}"></script>
 
+<script src="{{asset('js/datatable-layout-default.js')}}"></script>
+
 
 
 

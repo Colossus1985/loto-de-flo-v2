@@ -28,17 +28,18 @@
                     
                 </tr>
                 <tr class="filterrow">
-                    <th class="s1_select-filter">
-                        <select id="s1-filter" placeholder="Recherche" style="width: 100%; height:1.7rem;">
+                    <th class="select-filter">
+                        <select class="column-filter form-select form-select-sm" id="s1-filter" placeholder="Recherche">
                             <option value="">Tous</option>
                         </select>
                     </th>
-                    <th class="s1_input-filter" data-column="2"><input type="text" placeholder="Recherche" style="width: 100%;"></th>
+                    <th><input type="text" class="input-filter form-control form-control-sm" placeholder="Rechercher"></th>
                     <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
+                    
                 </tr>
             </thead>
             <tbody>
@@ -66,7 +67,7 @@
                         </td>
 
                         <td>
-                            <a href="{{ route('participant', [$participant->id_pseudo, 1]) }}" 
+                            <a href="{{ route('participant', [$participant->id, 1]) }}" 
                                 title="voir détails" 
                                 class="ui-tooltip btn-sm btn-info d-flex justify-content-center align-items-center mt-1 text-decoration-none">
                                 {{ $participant->pseudo }}
@@ -179,8 +180,8 @@
                     <th class="text-center">Disponible</th>
                     <th class="text-center">Joué</th>
                 </tr>
-                <tr class="filterrow">
-                    <th class="a1_input-filter" data-column="2"><input type="text" placeholder="Recherche" style="width: 100%;"></th>
+                <tr class="filterrow_table_participants_del">
+                    <th><input type="text" class="input-filter form-control form-control-sm" placeholder="Rechercher"></th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -234,13 +235,9 @@
 
 <script src="https://cdn.datatables.net/plug-ins/2.1.2/api/sum().js"></script>
 <script type="text/javascript">
-    // $.fn.dataTable.moment( 'DD/MM/YYYY' );
-    // $.fn.dataTable.moment( 'DD/MM/YY' );
-    // $.fn.dataTable.moment( 'DD/MM/YY HH:mm:ss' );
-    // $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );
-    ///////////////////////////////////////
     var cols_number_1 = [2, 3, 4, 5];
-    var table = $("#table_participants").DataTable({
+    var table_participants
+    table_participants = $("#table_participants").DataTable({
         language: {
             "sProcessing": "Traitement en cours...",
             "sSearch": "Rechercher&nbsp;:",
@@ -253,28 +250,31 @@
             "sZeroRecords": "Aucun &eacute;l&eacute;ment &agrave; afficher",
             "sEmptyTable": "Pas de valeur",
             "oPaginate": {
-                "sFirst": "Premier",
-                "sPrevious": "Pr&eacute;c&eacute;dent",
-                "sNext": "Suivant",
-                "sLast": "Dernier"
+                "sFirst": "<<",
+                "sPrevious": "<",
+                "sNext": ">",
+                "sLast": ">>"
             },
             "oAria": {
                 "sSortAscending": ": activer pour trier la colonne par ordre croissant",
                 "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
             }
         },
-        lengthMenu: [[30, 15, 20, 50, 100, 150, -1], [30, 15, 20, 50, 100, 150, "tous les"]],
-        colReorder: true,
-        select: true,
-        bSortCellsTop: true,
-        dom: 'B<"clear">lfrtip',
-        autoWidth: false,
+        dom: window.datatableDom,
+
         buttons: [
             { extend: 'copy', footer: true },
             { extend: 'print', footer: true },
             { extend: 'pdf', footer: true }, //, exportOptions: { columns: [1,2] }}         
             { extend: 'excel', footer: true },
-        ],  
+        ],
+
+        lengthMenu: [[15, 20, 50, 100, 150, -1], [15, 20, 50, 100, 150, "tous les"]],
+        colReorder: true,
+        select: true,
+        bSortCellsTop: true,
+        
+        autoWidth: false,
         order: [],
 
         columnDefs: [
@@ -314,54 +314,53 @@
             } else {
                 $("#tot-gen").show(1000);
             }
-        }, 
+        },
 
         // Selects
         initComplete: function () {
             $("#loading").hide();
             var api = this.api();
-            var elt = api.column(0).data().unique();
-            for (var i = 0; i < elt.length; i++) {
-                var option = '<option value="'+elt[i]+'">'+elt[i]+'</option>'
-                $(option).appendTo("#s1-filter");
-            }
-        }
-    });
 
-    // Recherche input
-    $.each($('.s1_input-filter', table.table().header()), function () {
-        var column = table.column($(this).index());
+            const filters = [
+                { columnIndex: 0, selectId: "#s1-filter" },
+            ];
 
-        var columnIndex = $(this).data('column');
-        
-        $('input', this).on('keyup change', function () {
-            if (column.search() !== this.value) {
-                column
-                        .search(this.value)
+            filters.forEach(({ columnIndex, selectId }) => {
+                const uniqueData = api.column(columnIndex).data().unique().sort();
+
+                uniqueData.each(function (d) {
+                    if (d !== null && d !== "") {
+                        $(selectId).append(`<option value="${d}">${d}</option>`);
+                    }
+                });
+
+                $(selectId).on('change', function () {
+                    const val = $.fn.dataTable.util.escapeRegex($(this).val());
+                    api.column(columnIndex)
+                        .search(val ? '^' + val + '$' : '', true, false)
                         .draw();
-            }
-            console.log(columnIndex);
-        });
+                });
+            });
+        },
+
     });
 
-    // Recherche select
-    $.each($('.s1_select-filter', table.table().header()), function () {
-        var column = table.column($(this).index());
-        $( 'select', this).on( 'change', function () {
-            if ( column.search() !== this.value ) {
-                column
-                    .search( this.value )
-                    .draw();
-            } else if ( column.search() !== "" ) {
-                column
-                    .draw();
+    // Filtres input
+    $('.filterrow .input-filter').each(function () {
+        var columnIndex = $(this).closest('th').index(); // ou simplement $(this).parent().index();
+        var column = table_participants.column(columnIndex);
+
+        $(this).on('keyup change', function () {
+            if (column.search() !== this.value) {
+                column.search(this.value).draw();
             }
         });
-    }); 
+    });
 
     // ============================================================
 
-    var table = $("#table_participants_del").DataTable({
+    var table_participants_del;
+    var table_participants_del = $("#table_participants_del").DataTable({
         language: {
             "sProcessing": "Traitement en cours...",
             "sSearch": "Rechercher&nbsp;:",
@@ -374,21 +373,23 @@
             "sZeroRecords": "Aucun &eacute;l&eacute;ment &agrave; afficher",
             "sEmptyTable": "Pas de valeur",
             "oPaginate": {
-                "sFirst": "Premier",
-                "sPrevious": "Pr&eacute;c&eacute;dent",
-                "sNext": "Suivant",
-                "sLast": "Dernier"
+                "sFirst": "<<",
+                "sPrevious": "<",
+                "sNext": ">",
+                "sLast": ">>"
             },
             "oAria": {
                 "sSortAscending": ": activer pour trier la colonne par ordre croissant",
                 "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
             }
         },
+        dom: window.datatableDom,
+        buttons: window.datatableButtons,
+
         lengthMenu: [[10, 15, 20, 50, 100, 150, -1], [10, 15, 20, 50, 100, 150, "tous les"]],
         colReorder: true,
         select: true,
         bSortCellsTop: true,
-        dom: 'B<"clear">lfrtip',
         autoWidth: false,
         buttons: [
             { extend: 'copy', footer: true },
@@ -397,49 +398,23 @@
             { extend: 'excel', footer: true },
         ],  
         order: [],
-
-        // Selects
-        initComplete: function () {
-            $("#loading").hide();
-            var api = this.api();
-            var elt = api.column(0).data().unique();
-            for (var i = 0; i < elt.length; i++) {
-                var option = '<option value="'+elt[i]+'">'+elt[i]+'</option>'
-                $(option).appendTo("#a1-filter");
-            }
-        }
     });
 
-    // Recherche input
-    $.each($('.a1_input-filter', table.table().header()), function () {
-        var column = table.column($(this).index());
-
-        var columnIndex = $(this).data('column');
-        
-        $('input', this).on('keyup change', function () {
+    // Filtres input
+    $('.filterrow_table_participants_del .input-filter').each(function () {
+        var columnIndex = $(this).closest('th').index();
+        var column = table_participants_del.column(columnIndex);
+        $(this).on('keyup change', function () {
             if (column.search() !== this.value) {
-                column
-                        .search(this.value)
-                        .draw();
+                column.search(this.value).draw();
+                //=== Mettre à jour le compteur
+                // var info = table_participants_del.page.info();
+                // $('#nb-select').html(info.recordsDisplay);
             }
-            console.log(columnIndex);
         });
     });
 
-    // Recherche select
-    $.each($('.a1_select-filter', table.table().header()), function () {
-        var column = table.column($(this).index());
-        $( 'select', this).on( 'change', function () {
-            if ( column.search() !== this.value ) {
-                column
-                    .search( this.value )
-                    .draw();
-            } else if ( column.search() !== "" ) {
-                column
-                    .draw();
-            }
-        });
-    }); 
+
 
 </script>
 

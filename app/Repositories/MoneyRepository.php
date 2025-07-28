@@ -154,23 +154,36 @@ class MoneyRepository
      */
     public function getJeux()
     {
-        $query = Money::select(
-            'money.id_pseudo',
-            'money.pseudo',
-            'money.id_group',
-            'money.group_name',
-            'participants.id',
-            DB::raw('SUM(money.credit) - SUM(CASE WHEN money.correction = 1 THEN money.debit ELSE 0 END) AS total_credit'),
-            DB::raw('SUM(money.creditGain) AS total_gain'),
-            DB::raw('SUM(CASE WHEN money.correction = 0 THEN money.debit ELSE 0 END) AS total_jouee'),
-            DB::raw('(SUM(money.credit) + SUM(money.creditGain)) - SUM(money.debit) AS total_dispo')
-        )
-        ->join('participants', 'money.id_pseudo', '=', 'participants.id')
-        ->where('participants.actif', 1)
-        ->whereNotNull('money.id_group')
-        ->groupBy('money.id_pseudo', 'money.pseudo', 'money.id_group', 'money.group_name', 'participants.id');
+        $results = DB::table('participants')
+            ->leftJoin('money', function ($join) {
+                $join->on('participants.id', '=', 'money.id_pseudo')
+                    ->where(function ($query) {
+                        $query->whereNotNull('participants.nameGroup')
+                            ->whereRaw("JSON_LENGTH(participants.nameGroup) > 0")
+                            ->whereRaw("JSON_CONTAINS(participants.nameGroup, JSON_QUOTE(money.group_name))");
+                    });
+            })
+            ->select(
+                'participants.id',
+                'participants.pseudo',
+                'money.id_group',
+                'money.group_name',
+                DB::raw('SUM(money.credit) - SUM(CASE WHEN money.correction = 1 THEN money.debit ELSE 0 END) AS total_credit'),
+                DB::raw('SUM(money.creditGain) AS total_gain'),
+                DB::raw('SUM(CASE WHEN money.correction = 0 THEN money.debit ELSE 0 END) AS total_jouee'),
+                DB::raw('(SUM(money.credit) + SUM(money.creditGain)) - SUM(money.debit) AS total_dispo')
+            )
+            ->where('participants.actif', 1)
+            ->groupBy(
+                'participants.id',
+                'participants.pseudo',
+                'money.id_group',
+                'money.group_name',
+            )
+            ;
+
     
-        $res = $query->get();
+        $res = $results->get();
 
         return $res;
     }

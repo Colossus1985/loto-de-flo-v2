@@ -51,7 +51,7 @@
                 <tr class="filterrow">
                     <th></th>
                     <th class="select-filter">
-                        <select id="s1-filter" placeholder="Recherche" style="width: 100%; height:1.7rem;">
+                        <select class="column-filter form-select form-select-sm" id="ds-filter" placeholder="Recherche">
                             <option value="">Tous</option>
                         </select>
                     </th>
@@ -109,11 +109,6 @@
 
 <script src="https://cdn.datatables.net/plug-ins/2.1.2/api/sum().js"></script>
 <script type="text/javascript">
-    // $.fn.dataTable.moment( 'DD/MM/YYYY' );
-    // $.fn.dataTable.moment( 'DD/MM/YY' );
-    // $.fn.dataTable.moment( 'DD/MM/YY HH:mm:ss' );
-    // $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );
-    ///////////////////////////////////////
     var cols_number = [2, 4];
     var table = $("#table_gainsHistory").DataTable({
         language: {
@@ -128,28 +123,24 @@
             "sZeroRecords": "Aucun &eacute;l&eacute;ment &agrave; afficher",
             "sEmptyTable": "Pas de valeur",
             "oPaginate": {
-                "sFirst": "Premier",
-                "sPrevious": "Pr&eacute;c&eacute;dent",
-                "sNext": "Suivant",
-                "sLast": "Dernier"
+                "sFirst": "<<",
+                "sPrevious": "<",
+                "sNext": ">",
+                "sLast": ">>"
             },
             "oAria": {
                 "sSortAscending": ": activer pour trier la colonne par ordre croissant",
                 "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
             }
         },
+        dom: window.datatableDom,
+        buttons: window.datatableButtons,
+        
         lengthMenu: [[15, 10, 20, 50, 100, 150, -1], [15, 10, 20, 50, 100, 150, "tous les"]],
         colReorder: true,
         select: true,
         bSortCellsTop: true,
-        dom: 'B<"clear">lfrtip',
         autoWidth: false,
-        buttons: [
-            { extend: 'copy', footer: true },
-            { extend: 'print', footer: true },
-            { extend: 'pdf', footer: true }, //, exportOptions: { columns: [1,2] }}         
-            { extend: 'excel', footer: true },
-        ],  
         order: [],
 
         columnDefs: [
