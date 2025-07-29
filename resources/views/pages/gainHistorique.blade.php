@@ -25,7 +25,7 @@
 </style>
 
 <div class="card">
-    <div class="card-header mb-3">
+    <div class="card-header">
         <div class="d-flex flex-row justify-content-between my-3">
             <div>
                 <h2>Historique des gains 🥳🥳🥳🥳🥳🥳🥳🥳🥳</h2>
@@ -38,7 +38,7 @@
         </div>
     </div>
         
-    <div class="card-body table-responsive bg-light p-2 rounded">
+    <div class="card-body table-responsive bg-light p-2 rounded pt-3">
         <table id="table_gainsHistory" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>
             <thead>
                 <tr>
@@ -51,7 +51,7 @@
                 <tr class="filterrow">
                     <th></th>
                     <th class="select-filter">
-                        <select class="column-filter form-select form-select-sm" id="ds-filter" placeholder="Recherche">
+                        <select class="column-filter form-select form-select-sm" id="s1-filter" placeholder="Recherche">
                             <option value="">Tous</option>
                         </select>
                     </th>
@@ -107,107 +107,85 @@
 
 @include('modals.addGain')
 
-<script src="https://cdn.datatables.net/plug-ins/2.1.2/api/sum().js"></script>
 <script type="text/javascript">
-    var cols_number = [2, 4];
-    var table = $("#table_gainsHistory").DataTable({
-        language: {
-            "sProcessing": "Traitement en cours...",
-            "sSearch": "Rechercher&nbsp;:",
-            "sLengthMenu": "Afficher _MENU_ &eacute;l&eacute;ments",
-            "sInfo": "Affichage de l'&eacute;l&eacute;ment _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
-            "sInfoEmpty": "Affichage de l'&eacute;l&eacute;ment 0 &agrave; 0 sur 0 &eacute;l&eacute;ment",
-            "sInfoFiltered": "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
-            "sInfoPostFix": "",
-            "sLoadingRecords": "Chargement en cours...",
-            "sZeroRecords": "Aucun &eacute;l&eacute;ment &agrave; afficher",
-            "sEmptyTable": "Pas de valeur",
-            "oPaginate": {
-                "sFirst": "<<",
-                "sPrevious": "<",
-                "sNext": ">",
-                "sLast": ">>"
+    var lignes;
+    $(document).ready(function() {
+        lignes = $("#table_gainsHistory").DataTable({
+            // Layout dans fichier externe
+            layout: window.datatableLayout,
+            language: window.datatableLangue,
+
+            search: { caseInsensitive: true },
+            pageLength: 20,
+            lengthMenu: [[ 20, 50, 100, 150, -1], [ 20, 50, 100, 150, "--Tous--"]],
+            colReorder: true,
+            select: true,
+            bSortCellsTop: true,
+            autoWidth: false,
+            order: [[0, 'asc']],
+            drawCallback: function () {
+                var api = this.api();
+                var c1 = api.column(2, { page: 'current' }).data().sum();
+                c1 = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(c1);
+                $("#c1").html(c1);
+                var t1 = api.column(2, { filter: 'applied' }).data().sum();
+                t1 = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(t1);
+                $("#t1").html(t1);
+                if (api.page.len() == -1 || api.page.info().pages == 1) {
+                    $("#tot-gen").hide(1000);
+                } else {
+                    $("#tot-gen").show(1000);
+                }
             },
-            "oAria": {
-                "sSortAscending": ": activer pour trier la colonne par ordre croissant",
-                "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
-            }
-        },
-        dom: window.datatableDom,
-        buttons: window.datatableButtons,
-        
-        lengthMenu: [[15, 10, 20, 50, 100, 150, -1], [15, 10, 20, 50, 100, 150, "tous les"]],
-        colReorder: true,
-        select: true,
-        bSortCellsTop: true,
-        autoWidth: false,
-        order: [],
+            // Selects
+            initComplete: function () {
+                $("#loading").hide();
+                    var api = this.api();
 
-        columnDefs: [
-                { type: 'formatted-num', targets: cols_number },
-                { type: 'numeric-comma', targets: cols_number },
-            ],
-        // Totaux
-        drawCallback: function () {
-            var api = this.api();
-            var c1  = api.column( 2, {page:'current'} ).data().sum();
-            c1    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c1);
-            $("#c1").html(c1);
-            var t1 = api.column( 2, {filter: 'applied'} ).data().sum();
-            t1    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t1);
-            $("#t1").html(t1);
+                    const filters = [
+                        { columnIndex: 1, selectId: "#s1-filter" },
+                    ];
 
-            if (api.page.len() == -1 || api.page.info().pages == 1) {;
-                $("#tot-gen").hide(1000);
-            } else {
-                $("#tot-gen").show(1000);
-            }
-        }, 
+                    filters.forEach(({ columnIndex, selectId }) => {
+                        const uniqueData = api.column(columnIndex).data().unique().sort();
 
-        // Selects
-        initComplete: function () {
-            $("#loading").hide();
-            var api = this.api();
-            var elt = api.column(1).data().unique();
-            for (var i = 0; i < elt.length; i++) {
-                var option = '<option value="'+elt[i]+'">'+elt[i]+'</option>'
-                $(option).appendTo("#s1-filter");
-            }
-        }
-    });
+                        uniqueData.each(function (d) {
+                            if (d !== null && d !== "") {
+                                $(selectId).append(`<option value="${d}">${d}</option>`);
+                            }
+                        });
 
-    // Recherche input
-    $.each($('.input-filter', table.table().header()), function () {
-        var column = table.column($(this).index());
+                        $(selectId).on('change', function () {
+                            const val = $.fn.dataTable.util.escapeRegex($(this).val());
+                            api.column(columnIndex)
+                                .search(val ? '^' + val + '$' : '', true, false)
+                                .draw();
+                        });
+                    });
+            },
 
-        var columnIndex = $(this).data('column');
-        
-        $('input', this).on('keyup change', function () {
-            if (column.search() !== this.value) {
-                column
-                        .search(this.value)
-                        .draw();
-            }
-            console.log(columnIndex);
         });
-    });
 
-    // Recherche select
-    $.each($('.select-filter', table.table().header()), function () {
-        var column = table.column($(this).index());
-        $( 'select', this).on( 'change', function () {
-            if ( column.search() !== this.value ) {
-                column
-                    .search( this.value )
-                    .draw();
-            } else if ( column.search() !== "" ) {
-                column
-                    .draw();
-            }
+        // Filtres input
+        $('.filterrow input.input-filter').each(function() {
+            const colIndex = $(this).closest('th').index();
+            $(this).on('keyup change', function () {
+                lignes.column(colIndex).search(this.value).draw();
+            });
         });
-    }); 
 
-
+    });
+    
+    function makeExportButton(type, text) {
+        return {
+            extend: type,
+            className: 'btn btn-sm btn-light border border-primary',
+            text: text,
+            exportOptions: {
+                columns: ':visible'
+            }
+        };
+    }
 </script>
 
 @endsection

@@ -117,5 +117,5 @@
             </div>
         </div>
     </div>
-    <script src="/js/addGain.js"></script>
+    {{-- <script src="/js/addGain.js"></script> --}}
 </div>

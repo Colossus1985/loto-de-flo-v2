@@ -1,3 +1,11 @@
+<script src="https://cdn.datatables.net/v/dt/jq-3.7.0/moment-2.29.4/dt-2.3.0/b-3.2.3/b-html5-3.2.3/b-print-3.2.3/cr-2.1.0/date-1.5.5/kt-2.12.1/r-3.0.4/rg-1.5.1/rr-1.5.0/sc-2.4.3/sb-1.8.2/sp-2.3.3/sl-3.0.0/datatables.min.js" crossorigin="anonymous"></script>
+<link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.3.0/cr-2.1.0/rr-1.5.0/sl-3.0.0/datatables.min.css" rel="stylesheet" />
+
+{{-- Jquery --}}
+<script src="{{asset('AdminLTE-3.2.0/plugins/jquery/jquery.min.js')}}"></script>
+<script scr="{{asset('js/app.js')}}" defer></script>
+<script src="{{asset('js/datatable.min.js')}}"></script>
+
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&amp;display=fallback">
 
@@ -12,13 +20,11 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="{{asset('js/commun.js')}}"></script>
 
-{{-- Jquery --}}
-<script src="{{asset('AdminLTE-3.2.0/plugins/jquery/jquery.min.js')}}"></script>
-<script scr="{{asset('js/app.js')}}" defer></script>
+
 
 {{-- Datatable --}}
-<script src="{{asset('js/commun.js')}}"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/2.1.2/css/dataTables.dataTables.css" />
-<script src="https://cdn.datatables.net/2.1.2/js/dataTables.js"></script>
+{{-- <link rel="stylesheet" href="https://cdn.datatables.net/2.1.2/css/dataTables.dataTables.css" />
+<script src="https://cdn.datatables.net/2.1.2/js/dataTables.js"></script> --}}
 

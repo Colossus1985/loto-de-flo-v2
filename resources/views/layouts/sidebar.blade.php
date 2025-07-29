@@ -7,13 +7,13 @@ $user_ok = $local ? true : $user_ok;
 ?>
 
 <style>
-    .main-sidebar__{
-        background-color: #0083ff;
-        color: #ffffff;
+    .main-sidebar{
+        background-color: #fff200;
+        color: #000000;
     }
 </style>
 <!-- Main Sidebar Container -->
-<aside class="main-sidebar sidebar-dark-info elevation-4">
+<aside class="main-sidebar elevation-4">
     <!-- Brand Logo -->
     <a href="/" class="ps-3 brand-link text-decoration-none">
       <img src="{{asset('img/logo_lotov2.png')}}" alt="Digilife" class="brand-image rounded">

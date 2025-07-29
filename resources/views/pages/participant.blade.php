@@ -325,7 +325,7 @@
                     <tr class="filterrow">
                         <th></th>
                         <th class="select-filter">
-                            <select class="column-filter form-select form-select-sm" id="d1-filter" placeholder="Recherche">
+                            <select class="column-filter form-select form-select-sm" id="s1-filter" placeholder="Recherche">
                                 <option value="">Tous</option>
                             </select>
                         </th>
@@ -375,15 +375,15 @@
                 <tfoot>
                     <tr id="tot-gen">
                         <th colspan="2"><h4>Totaux page</h4></th>
+                        <th class="text-right"><h4 id="c1"></h4></th>
                         <th class="text-right"><h4 id="c2"></h4></th>
                         <th class="text-right"><h4 id="c3"></h4></th>
-                        <th class="text-right"><h4 id="c4"></h4></th>
                     </tr>                            
                     <tr>
                         <th colspan="2"><h4>Totaux généraux</h4></th>
+                        <th class="text-right"><h4 id="t1"></h4></th>
                         <th class="text-right"><h4 id="t2"></h4></th>
                         <th class="text-right"><h4 id="t3"></h4></th>
-                        <th class="text-right"><h4 id="t4"></h4></th>
                     </tr>
                 </tfoot>
             </table>
@@ -393,123 +393,98 @@
 
 </div>
 
-<script src="https://cdn.datatables.net/plug-ins/2.1.2/api/sum().js"></script>
 <script type="text/javascript">
-    // $.fn.dataTable.moment( 'DD/MM/YYYY' );
-    // $.fn.dataTable.moment( 'DD/MM/YY' );
-    // $.fn.dataTable.moment( 'DD/MM/YY HH:mm:ss' );
-    // $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );
-    ///////////////////////////////////////
-    var cols_number = [2, 3, 4];
-    var table = $("#table_participant").DataTable({
-        language: {
-            "sProcessing": "Traitement en cours...",
-            "sSearch": "Rechercher&nbsp;:",
-            "sLengthMenu": "Afficher _MENU_ &eacute;l&eacute;ments",
-            "sInfo": "Affichage de l'&eacute;l&eacute;ment _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
-            "sInfoEmpty": "Affichage de l'&eacute;l&eacute;ment 0 &agrave; 0 sur 0 &eacute;l&eacute;ment",
-            "sInfoFiltered": "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
-            "sInfoPostFix": "",
-            "sLoadingRecords": "Chargement en cours...",
-            "sZeroRecords": "Aucun &eacute;l&eacute;ment &agrave; afficher",
-            "sEmptyTable": "Pas de valeur",
-            "oPaginate": {
-                "sFirst": "<<",
-                "sPrevious": "<",
-                "sNext": ">",
-                "sLast": ">>"
-            },
-            "oAria": {
-                "sSortAscending": ": activer pour trier la colonne par ordre croissant",
-                "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
-            }
-        },
-        dom: window.datatableDom,
-        buttons: window.datatableButtons,
-        
-        lengthMenu: [[10, 15, 20, 50, 100, 150, -1], [10, 15, 20, 50, 100, 150, "tous les"]],
-        colReorder: true,
-        select: true,
-        bSortCellsTop: true,
-        autoWidth: false,
-        order: [],
+    var table_participant;
+    $(document).ready(function() {
+        table_participant = $("#table_participant").DataTable({
+            // Layout dans fichier externe
+            layout: window.datatableLayout,
+            language: window.datatableLangue,
 
-        columnDefs: [
-                { type: 'formatted-num', targets: cols_number },
-                { type: 'numeric-comma', targets: cols_number },
-            ],
-        // Totaux
-        drawCallback: function () {
+            search: { caseInsensitive: true },
+            pageLength: 25,
+            lengthMenu: [[ 25, 50, 100, 150, -1], [ 25, 50, 100, 150, "--Tous--"]],
+            colReorder: true,
+            select: true,
+            bSortCellsTop: true,
+            autoWidth: false,
+            order: [[0, 'desc']],
+            drawCallback: function () {
             var api = this.api();
-            var c2  = api.column( 2, {page:'current'} ).data().sum();
-            var c3  = api.column( 3, {page:'current'} ).data().sum();
-            var c4  = api.column( 4, {page:'current'} ).data().sum();
+            var c1  = api.column( 2, {page:'current'} ).data().sum();
+            var c2  = api.column( 3, {page:'current'} ).data().sum();
+            var c3  = api.column( 4, {page:'current'} ).data().sum();
+            c1    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c1);
             c2    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c2);
             c3    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c3);
-            c4    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c4);
+            $("#c1").html(c1);
             $("#c2").html(c2);
             $("#c3").html(c3);
-            $("#c4").html(c4);
-            var t2 = api.column( 2, {filter: 'applied'} ).data().sum();
-            var t3 = api.column( 3, {filter: 'applied'} ).data().sum();
-            var t4 = api.column( 4, {filter: 'applied'} ).data().sum();
+            var t1 = api.column( 2, {filter: 'applied'} ).data().sum();
+            var t2 = api.column( 3, {filter: 'applied'} ).data().sum();
+            var t3 = api.column( 4, {filter: 'applied'} ).data().sum();
+            t1    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t1);
             t2    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t2);
             t3    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t3);
-            t4    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t4);
+            $("#t1").html(t1);
             $("#t2").html(t2);
             $("#t3").html(t3);
-            $("#t4").html(t4);
 
             if (api.page.len() == -1 || api.page.info().pages == 1) {;
                 $("#tot-gen").hide(1000);
             } else {
                 $("#tot-gen").show(1000);
             }
-        }, 
+        },
+            // Selects
+            initComplete: function () {
+                $("#loading").hide();
+                    var api = this.api();
 
-        // Selects
-        initComplete: function () {
-            $("#loading").hide();
-            var api = this.api();
-            var elt = api.column(1).data().unique();
-            for (var i = 0; i < elt.length; i++) {
-                var option = '<option value="'+elt[i]+'">'+elt[i]+'</option>'
-                $(option).appendTo("#s1-filter");
-            }
-        }
-    });
+                    const filters = [
+                        { columnIndex: 1, selectId: "#s1-filter" },
+                    ];
 
-    // Recherche input
-    $.each($('.input-filter', table.table().header()), function () {
-        var column = table.column($(this).index());
+                    filters.forEach(({ columnIndex, selectId }) => {
+                        const uniqueData = api.column(columnIndex).data().unique().sort();
 
-        var columnIndex = $(this).data('column');
-        
-        $('input', this).on('keyup change', function () {
-            if (column.search() !== this.value) {
-                column
-                        .search(this.value)
-                        .draw();
-            }
-            console.log(columnIndex);
+                        uniqueData.each(function (d) {
+                            if (d !== null && d !== "") {
+                                $(selectId).append(`<option value="${d}">${d}</option>`);
+                            }
+                        });
+
+                        $(selectId).on('change', function () {
+                            const val = $.fn.dataTable.util.escapeRegex($(this).val());
+                            api.column(columnIndex)
+                                .search(val ? '^' + val + '$' : '', true, false)
+                                .draw();
+                        });
+                    });
+            },
+
         });
-    });
 
-    // Recherche select
-    $.each($('.select-filter', table.table().header()), function () {
-        var column = table.column($(this).index());
-        $( 'select', this).on( 'change', function () {
-            if ( column.search() !== this.value ) {
-                column
-                    .search( this.value )
-                    .draw();
-            } else if ( column.search() !== "" ) {
-                column
-                    .draw();
-            }
+        // Filtres input
+        $('.filterrow input.input-filter').each(function() {
+            const colIndex = $(this).closest('th').index();
+            $(this).on('keyup change', function () {
+                table_participant.column(colIndex).search(this.value).draw();
+            });
         });
-    }); 
 
+    });
+    
+    function makeExportButton(type, text) {
+        return {
+            extend: type,
+            className: 'btn btn-sm btn-light border border-primary',
+            text: text,
+            exportOptions: {
+                columns: ':visible'
+            }
+        };
+    }
 </script>
 
 @endsection
