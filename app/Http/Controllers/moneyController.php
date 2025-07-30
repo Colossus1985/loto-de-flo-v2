@@ -155,7 +155,9 @@ class moneyController extends Controller
     {
         $nameGroup      = $request->inputNameGroup;
         $group          = $this->groups->getGroup('nameGroup', [$request->inputNameGroup]);
-        
+        $date           = $request->filled('inputDate') ? $request->input('inputDate') : now()->toDateString();
+
+        // dd($date);
         if (!$nameGroup || $nameGroup == '') {
             return redirect()->back()
                 ->with('error', 'indiquez le groupe qui joue, s\'il vous plait');
@@ -184,13 +186,14 @@ class moneyController extends Controller
                 return redirect()->back()
                 ->with('error', $res['message']);
             }
+            // dd($date);
 
             $update_money = [
                 'amount'        => $amount,
                 'pseudo'        => $participant->pseudo,
                 'id_pseudo'     => $participant->id,
                 'debit'         => $debit,
-                'date'          => $request->inputDate,
+                'date'          => $date,
                 'id_group'      => $group[0]->id,
                 'group_name'    => $group[0]->nameGroup,
             ];
@@ -210,5 +213,23 @@ class moneyController extends Controller
 
         return redirect()->back()
             ->with('success', $debit.' € retiré du(des) compte(s) de ' . $liste_pseudo_str . ' du groupe ' . $nameGroup);
+    }
+
+    /**
+     * supprimer une ligne de l'historisation détail mouvement d'un participant
+     * @param int id ligne
+     */
+    public function delLigDetailParticipant(int $id_ligne)
+    {
+        $update_money = [
+            'del'        => 1,
+        ];
+        $res = $this->money->updateMoney($update_money, $id_ligne);
+        if ($res['erreur']) {
+            return redirect()->back()
+            ->with('error', $res['message']);
+        }
+
+        return redirect()->back()->with('success', $res['message']);
     }
 }

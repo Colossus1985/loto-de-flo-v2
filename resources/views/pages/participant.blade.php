@@ -31,7 +31,7 @@
                                     aria-expanded="true" 
                                     aria-controls="resume_Collapse" 
                                     class="btn btn-info text-nowrap">
-                            Résumée
+                            Résumé
                         </button>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
                                     aria-expanded="false" 
                                     aria-controls="details_Collapse" 
                                     class="btn btn-info text-nowrap">
-                            Détails personnelles
+                            Détails personnels
                         </button>
                     </div>
                 </div>
@@ -316,14 +316,17 @@
             <table id="table_participant" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>
                 <thead>
                     <tr>
+                        <th class="text-center">ID ligne</th>
                         <th class="text-center">Date</th>
                         <th class="text-center">Groupe</th>
                         <th class="text-center">Credit</th>
                         <th class="text-center">Debit</th>
                         <th class="text-center">Credit Gain</th>
+                        <th></th>
                     </tr>
                     <tr class="filterrow">
-                        <th></th>
+                        <th><input type="text" class="input-filter form-control form-control-sm" placeholder="Rechercher"></th>
+                        <th><input type="text" class="input-filter form-control form-control-sm" placeholder="Rechercher"></th>
                         <th class="select-filter">
                             <select class="column-filter form-select form-select-sm" id="s1-filter" placeholder="Recherche">
                                 <option value="">Tous</option>
@@ -332,12 +335,14 @@
                         <th></th>
                         <th></th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($actions as $action)
                         <tr @if ($action->correction) class="table-secondary" title="correction de fond!" @endif>
-                            <td class="fw-bold text-center">{{ sql2display($action->created_at) }}</td>
+                            <td class="text-center">{{ $action->id }}</td>
+                            <td class="fw-bold text-center">{{ sql2display($action->date) }}</td>
                             <td class="fw-bold text-center">{{ $action->group_name }}</td>
                             
                             @if (!$action->correction)
@@ -369,18 +374,26 @@
                             @else
                                 <td class="text-end fw-bold">{{ ifNotZero($action->creditGain, true, ' €', '.', ' ') }}</td>
                             @endif
+
+                            <td class="d-flex justify-content-center align-items-center">
+                                @if ( !$action->creditGain >= 0.01 )
+                                    <a href="{{ route('delLigDetailParticipant', $action->id)}}">
+                                        <i class="bi bi-recycle"></i>
+                                    </a>
+                                @endif
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
                 <tfoot>
                     <tr id="tot-gen">
-                        <th colspan="2"><h4>Totaux page</h4></th>
+                        <th colspan="3"><h4>Totaux page</h4></th>
                         <th class="text-right"><h4 id="c1"></h4></th>
                         <th class="text-right"><h4 id="c2"></h4></th>
                         <th class="text-right"><h4 id="c3"></h4></th>
                     </tr>                            
                     <tr>
-                        <th colspan="2"><h4>Totaux généraux</h4></th>
+                        <th colspan="3"><h4>Totaux généraux</h4></th>
                         <th class="text-right"><h4 id="t1"></h4></th>
                         <th class="text-right"><h4 id="t2"></h4></th>
                         <th class="text-right"><h4 id="t3"></h4></th>
@@ -411,18 +424,18 @@
             order: [[0, 'desc']],
             drawCallback: function () {
             var api = this.api();
-            var c1  = api.column( 2, {page:'current'} ).data().sum();
-            var c2  = api.column( 3, {page:'current'} ).data().sum();
-            var c3  = api.column( 4, {page:'current'} ).data().sum();
+            var c1  = api.column( 3, {page:'current'} ).data().sum();
+            var c2  = api.column( 4, {page:'current'} ).data().sum();
+            var c3  = api.column( 5, {page:'current'} ).data().sum();
             c1    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c1);
             c2    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c2);
             c3    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c3);
             $("#c1").html(c1);
             $("#c2").html(c2);
             $("#c3").html(c3);
-            var t1 = api.column( 2, {filter: 'applied'} ).data().sum();
-            var t2 = api.column( 3, {filter: 'applied'} ).data().sum();
-            var t3 = api.column( 4, {filter: 'applied'} ).data().sum();
+            var t1 = api.column( 3, {filter: 'applied'} ).data().sum();
+            var t2 = api.column( 4, {filter: 'applied'} ).data().sum();
+            var t3 = api.column( 5, {filter: 'applied'} ).data().sum();
             t1    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t1);
             t2    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t2);
             t3    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t3);
@@ -442,7 +455,7 @@
                     var api = this.api();
 
                     const filters = [
-                        { columnIndex: 1, selectId: "#s1-filter" },
+                        { columnIndex: 2, selectId: "#s1-filter" },
                     ];
 
                     filters.forEach(({ columnIndex, selectId }) => {

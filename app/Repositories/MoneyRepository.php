@@ -53,6 +53,70 @@ class MoneyRepository
     }
 
     /**
+     * update ligne
+     * Table Money
+     * @param array chmaps = values
+     */
+    public function updateMoney($champs, $id_ligne)
+    {
+        try {
+            $money = Money::find($id_ligne);
+            
+            if (!$money) {
+                return ['erreur' => true, 'message' => "Ligne avec ID $id_ligne introuvable dans la table Money."];
+            }
+
+            // Mettre à jour les champs avec les valeurs fournies
+            foreach ($champs as $key => $value) {
+                $money->$key = $value;
+            }
+
+            $money->save();
+
+            // récalculer l'amount de la dernière ligne du groupe et du participant
+            // Récupère la dernière ligne (par date ou ID décroissant) pour ce groupe et ce pseudo
+            $all_lignes = Money::where('group_name', $money->group_name)
+                ->where('id_pseudo', $money->id_pseudo)
+                ->where('date', '>=', $money->date) // ou 'id' >=
+                ->orderBy('date')
+                ->get();
+
+            // D’abord, récupérer le solde juste avant la ligne modifiée
+            $solde_prec = Money::where('group_name', $money->group_name)
+                ->where('id_pseudo', $money->id_pseudo)
+                ->where('date', '<', $money->date)
+                ->orderByDesc('date')
+                ->first();
+
+            $solde = $solde_prec ? $solde_prec->amount : 0;
+
+            // Puis recalculer à partir de la ligne modifiée
+            foreach ($all_lignes as $ligne) {
+                $credit = floatval($ligne->credit ?? 0);
+                $debit  = floatval($ligne->debit ?? 0);
+
+                $solde += $credit;
+                $solde -= $debit;
+
+                $ligne->amount = $solde;
+                $ligne->save();
+            }
+
+
+            return [
+                'erreur' => false,
+                'message' => "Update de la ligne $id_ligne dans la table Money effectué avec succès !"
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'erreur' => true,
+                'message' => "Erreur lors de la mise à jour de la table Money pour la ligne $id_ligne: " . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
      * Vérifie si un enregistrement existe dans la table Money
      * pour un participant et un groupe donnés.
      *

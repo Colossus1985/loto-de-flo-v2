@@ -19,6 +19,7 @@ Route::get('participants/addParticipantForm'                    , [participantCo
 Route::post('participants/addParticipant'                       , [participantController::class, 'addParticipant'])         ->name('addParticipant');
 Route::get('participants/jouerForm'                             , [moneyController::class, 'getJouerForm'])                 ->name('jouerForm');
 Route::post('participants/debitAll'                             , [moneyController::class, 'debitAll'])                     ->name('debitAll');
+Route::get('participants/del-lig/{id_lig}'                     , [moneyController::class, 'delLigDetailParticipant'])      ->name('delLigDetailParticipant');
 
 Route::get('gains/getGainHistory'                               , [gainController::class, 'getGainHistory'])                ->name('getGainHistory');
 Route::get('gains/addGain'                                      , [gainController::class, 'addGainForm'])                   ->name('addGainForm');
