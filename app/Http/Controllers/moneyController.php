@@ -86,6 +86,7 @@ class moneyController extends Controller
             'credit'        => $credit,
             'id_group'      => $group[0]->id,
             'group_name'    => $group[0]->nameGroup,
+            'date'          => now(),
         ];
         $res_insert_money = $this->money->insertMoney($champs);
         if ($res_insert_money['erreur']) {
@@ -232,4 +233,5 @@ class moneyController extends Controller
 
         return redirect()->back()->with('success', $res['message']);
     }
+
 }

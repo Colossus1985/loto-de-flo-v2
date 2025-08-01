@@ -12,6 +12,7 @@ use App\Repositories\ParticipantRepository;
 use Illuminate\Database\QueryException;
 use Exception;
 use DB;
+use Illuminate\Support\Facades\Log;
 
 class MoneyRepository 
 {
@@ -25,6 +26,7 @@ class MoneyRepository
     {
         $query = Money::query()
             ->where($champ, $valeur)
+            ->where('del', 0)
             ->orderBy('id', 'desc')
             ;
         $res = $query->get();
@@ -60,49 +62,49 @@ class MoneyRepository
     public function updateMoney($champs, $id_ligne)
     {
         try {
-            $money = Money::find($id_ligne);
-            
-            if (!$money) {
+            $lig_del = Money::find($id_ligne);
+            if (!$lig_del) {
                 return ['erreur' => true, 'message' => "Ligne avec ID $id_ligne introuvable dans la table Money."];
             }
 
             // Mettre à jour les champs avec les valeurs fournies
             foreach ($champs as $key => $value) {
-                $money->$key = $value;
+                $lig_del->$key = $value;
             }
 
-            $money->save();
+            $lig_del->save();
 
             // récalculer l'amount de la dernière ligne du groupe et du participant
-            // Récupère la dernière ligne (par date ou ID décroissant) pour ce groupe et ce pseudo
-            $all_lignes = Money::where('group_name', $money->group_name)
-                ->where('id_pseudo', $money->id_pseudo)
-                ->where('date', '>=', $money->date) // ou 'id' >=
-                ->orderBy('date')
+            $all_lignes = Money::where('group_name', $lig_del->group_name)
+                ->where('id_pseudo', $lig_del->id_pseudo)
+                ->where('id', '>', $lig_del->id)
                 ->get();
 
-            // D’abord, récupérer le solde juste avant la ligne modifiée
-            $solde_prec = Money::where('group_name', $money->group_name)
-                ->where('id_pseudo', $money->id_pseudo)
-                ->where('date', '<', $money->date)
-                ->orderByDesc('date')
-                ->first();
-
-            $solde = $solde_prec ? $solde_prec->amount : 0;
-
-            // Puis recalculer à partir de la ligne modifiée
+            // dd($all_lignes, $lig_del);
             foreach ($all_lignes as $ligne) {
-                $credit = floatval($ligne->credit ?? 0);
-                $debit  = floatval($ligne->debit ?? 0);
+                $credit = floatval($lig_del->credit ?? 0);
+                $debit  = floatval($lig_del->debit ?? 0);
+                
+                $amount = ($ligne->amount - $credit) + $debit;
+                // dd($solde, $credit, $debit);
+                // dump("amount = $amount");
+                // dump("credit = $credit");
+                // dump("debit = $debit");
+                $ligne->amount = $amount;
 
-                $solde += $credit;
-                $solde -= $debit;
+                // if ($ligne->isDirty('amount')) {
+                //     dump("Amount changé pour ID {$ligne->id} : " . $ligne->getOriginal('amount') . " → $amount");
+                // } else {
+                //     dump("Aucun changement détecté pour ID {$ligne->id} (amount = $amount)");
+                // }
 
-                $ligne->amount = $solde;
-                $ligne->save();
+                try {
+                    $ligne->save();
+                } catch (\Exception $e) {
+                    Log::warning('erreur update lignes amount :' . $e);
+                }
             }
-
-
+            
             return [
                 'erreur' => false,
                 'message' => "Update de la ligne $id_ligne dans la table Money effectué avec succès !"

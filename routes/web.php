@@ -19,21 +19,22 @@ Route::get('participants/addParticipantForm'                    , [participantCo
 Route::post('participants/addParticipant'                       , [participantController::class, 'addParticipant'])         ->name('addParticipant');
 Route::get('participants/jouerForm'                             , [moneyController::class, 'getJouerForm'])                 ->name('jouerForm');
 Route::post('participants/debitAll'                             , [moneyController::class, 'debitAll'])                     ->name('debitAll');
-Route::get('participants/del-lig/{id_lig}'                     , [moneyController::class, 'delLigDetailParticipant'])      ->name('delLigDetailParticipant');
+Route::get('participants/del-lig/{id_lig}'                      , [moneyController::class, 'delLigDetailParticipant'])      ->name('delLigDetailParticipant');
 
 Route::get('gains/getGainHistory'                               , [gainController::class, 'getGainHistory'])                ->name('getGainHistory');
 Route::get('gains/addGain'                                      , [gainController::class, 'addGainForm'])                   ->name('addGainForm');
 Route::post('gains/addGain'                                     , [gainController::class, 'addGain'])                       ->name('addGain');
 Route::post('gains/addMoney/{idParticipant}'                    , [moneyController::class, 'addMoney'])                     ->name('addMoney');
 Route::post('gains/debitMoney/{idParticipant}'                  , [moneyController::class, 'debitMoney'])                   ->name('debitMoney');
+Route::get('gains/delLigGain/{id_lig}'                          , [gainController::class, 'delLigGain'])                    ->name('delLigGain');
 
-Route::post('groups/changeGroup/{idParticipant}'                 , [groupsController::class, 'changeGroup'])                 ->name('changeGroup');
-Route::post('groups/addGroup'                                    , [groupsController::class, 'addGroup'])                    ->name('addGroup');
-Route::get('groups/participantGroupForm'                         , [groupsController::class, 'participantGroupForm'])        ->name('participantGroupForm');
-Route::post('groups/participantGroup'                            , [groupsController::class, 'participantGroup'])            ->name('participantGroup');
-Route::get('groups/participantGroup/delete/{idParticipant}'      , [groupsController::class, 'participantGroupDelete'])      ->name('participantGroupDelete');
-Route::get('groups/delete/{id_group}/{nameGroup}'                , [groupsController::class, 'groupDelete'])                 ->name('groupDelete');
-Route::get('groups/rallume/{id_group}'                           , [groupsController::class, 'groupRallume'])                ->name('groupRallume');
+Route::post('groups/changeGroup/{idParticipant}'                , [groupsController::class, 'changeGroup'])                 ->name('changeGroup');
+Route::post('groups/addGroup'                                   , [groupsController::class, 'addGroup'])                    ->name('addGroup');
+Route::get('groups/participantGroupForm'                        , [groupsController::class, 'participantGroupForm'])        ->name('participantGroupForm');
+Route::post('groups/participantGroup'                           , [groupsController::class, 'participantGroup'])            ->name('participantGroup');
+Route::get('groups/participantGroup/delete/{idParticipant}'     , [groupsController::class, 'participantGroupDelete'])      ->name('participantGroupDelete');
+Route::get('groups/delete/{id_group}/{nameGroup}'               , [groupsController::class, 'groupDelete'])                 ->name('groupDelete');
+Route::get('groups/rallume/{id_group}'                          , [groupsController::class, 'groupRallume'])                ->name('groupRallume');
 
 Route::get('log/get-group-data/{name_groupe}'                   , [logController::class, 'getGroupData']);
 

@@ -42,13 +42,16 @@
         <table id="table_gainsHistory" class="table table-bordered order-column table-hover compact nowrap cell-border small"><?php // Default dataTables  ?>
             <thead>
                 <tr>
+                    <th class="text-center">ID</th>
                     <th class="text-center">Date</th>
                     <th class="text-center">Groupe</th>
                     <th class="text-center">Gain</th>
                     <th class="text-center">Nb Participants</th>
                     <th class="text-center">Gain individuel</th>
+                    <th></th>
                 </tr>
                 <tr class="filterrow">
+                    <th><input type="text" class="input-filter form-control form-control-sm" placeholder="Rechercher"></th>
                     <th></th>
                     <th class="select-filter">
                         <select class="column-filter form-select form-select-sm" id="s1-filter" placeholder="Recherche">
@@ -58,11 +61,15 @@
                     <th></th>
                     <th></th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($gains as $gain)
                     <tr>
+                        <td style="width: 4rem;"">
+                            <span>{{ $gain->id }}</span>
+                        </td>
                         <td class="text-center align-middle">
                             <span>{{ sql2display($gain->date) }}</span>
                         </td>
@@ -84,21 +91,24 @@
                                 <span>{{ ifNotZero($gain->gainIndividuel, true, ' €', '.', ' ') }} </span>
                             @endif
                         </td>
+                        <td class="d-flex justify-content-center align-items-center">
+                            <a href="{{ route('delLigGain', $gain->id)}}">
+                                <i class="bi bi-recycle"></i>
+                            </a>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
             <tfoot>
                 <tr id="tot-gen">
-                    <th colspan="2"><h4>Gains page</h4></th>
+                    <th colspan="3"><h4>Gains page</h4></th>
                     <th class="text-right"><h4 id="c1"></h4></th>
-                    <th></th>
-                    <th></th>
+                    <th colspan="3"></th>
                 </tr>                            
                 <tr>
-                    <th colspan="2"><h4>Gains totaux</h4></th>
+                    <th colspan="3"><h4>Gains totaux</h4></th>
                     <th class="text-right border-gold"><h4 id="t1"></h4></th>
-                    <th></th>
-                    <th></th>
+                    <th colspan="3"></th>
                 </tr>
             </tfoot>
         </table>
@@ -122,7 +132,7 @@
             select: true,
             bSortCellsTop: true,
             autoWidth: false,
-            order: [[0, 'asc']],
+            order: [[0, 'desc']],
             drawCallback: function () {
                 var api = this.api();
                 var c1 = api.column(2, { page: 'current' }).data().sum();

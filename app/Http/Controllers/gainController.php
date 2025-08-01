@@ -10,6 +10,11 @@ use Symfony\Component\HttpFoundation\Request;
 
 class gainController extends Controller
 {
+    protected $participant;
+    protected $groups;
+    protected $money;
+    protected $gain;
+    
     public function __construct(
         ParticipantRepository $participant,
         GroupsRepository $groups,
@@ -141,5 +146,20 @@ class gainController extends Controller
     {
         $this->gain->ajoutGroupInGain();
         return response()->json('ok');
+    }
+
+    /**
+     * supprimer une ligne gains de l'historisation  et de chaque participant
+     * @param int id ligne
+     */
+    public function delLigGain(int $id_ligne)
+    {
+        $res = $this->gain->updateDelLigGain($id_ligne);
+        if ($res['erreur']) {
+            return redirect()->back()
+            ->with('error', $res['message']);
+        }
+
+        return redirect()->back()->with('success', $res['message']);
     }
 }

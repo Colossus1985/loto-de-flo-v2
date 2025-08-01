@@ -319,6 +319,7 @@
                         <th class="text-center">ID ligne</th>
                         <th class="text-center">Date</th>
                         <th class="text-center">Groupe</th>
+                        <th class="text-center">STATUT</th>
                         <th class="text-center">Credit</th>
                         <th class="text-center">Debit</th>
                         <th class="text-center">Credit Gain</th>
@@ -336,6 +337,7 @@
                         <th></th>
                         <th></th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -344,7 +346,7 @@
                             <td class="text-center">{{ $action->id }}</td>
                             <td class="fw-bold text-center">{{ sql2display($action->date) }}</td>
                             <td class="fw-bold text-center">{{ $action->group_name }}</td>
-                            
+                            <td class="text-end fw-bold" >{{ ifNotZero($action->amount, true, ' €', '.', ' ') }}</td>
                             @if (!$action->correction)
                                 @if ( $action->credit >= 0.01 )
                                     <td class="bg_color-super text-end fw-bold" >{{ ifNotZero($action->credit, true, ' €', '.', ' ') }}</td>
@@ -387,13 +389,13 @@
                 </tbody>
                 <tfoot>
                     <tr id="tot-gen">
-                        <th colspan="3"><h4>Totaux page</h4></th>
+                        <th colspan="4"><h4>Totaux page</h4></th>
                         <th class="text-right"><h4 id="c1"></h4></th>
                         <th class="text-right"><h4 id="c2"></h4></th>
                         <th class="text-right"><h4 id="c3"></h4></th>
                     </tr>                            
                     <tr>
-                        <th colspan="3"><h4>Totaux généraux</h4></th>
+                        <th colspan="4"><h4>Totaux généraux</h4></th>
                         <th class="text-right"><h4 id="t1"></h4></th>
                         <th class="text-right"><h4 id="t2"></h4></th>
                         <th class="text-right"><h4 id="t3"></h4></th>
@@ -424,18 +426,18 @@
             order: [[0, 'desc']],
             drawCallback: function () {
             var api = this.api();
-            var c1  = api.column( 3, {page:'current'} ).data().sum();
-            var c2  = api.column( 4, {page:'current'} ).data().sum();
-            var c3  = api.column( 5, {page:'current'} ).data().sum();
+            var c1  = api.column( 4, {page:'current'} ).data().sum();
+            var c2  = api.column( 5, {page:'current'} ).data().sum();
+            var c3  = api.column( 6, {page:'current'} ).data().sum();
             c1    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c1);
             c2    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c2);
             c3    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(c3);
             $("#c1").html(c1);
             $("#c2").html(c2);
             $("#c3").html(c3);
-            var t1 = api.column( 3, {filter: 'applied'} ).data().sum();
-            var t2 = api.column( 4, {filter: 'applied'} ).data().sum();
-            var t3 = api.column( 5, {filter: 'applied'} ).data().sum();
+            var t1 = api.column( 4, {filter: 'applied'} ).data().sum();
+            var t2 = api.column( 5, {filter: 'applied'} ).data().sum();
+            var t3 = api.column( 6, {filter: 'applied'} ).data().sum();
             t1    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t1);
             t2    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t2);
             t3    = new Intl.NumberFormat("fr-FR", {style: "currency", currency: "EUR"}).format(t3);

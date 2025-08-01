@@ -116,14 +116,6 @@
                                     data-participant-name="{{$participant->group_name}}"
                                     style="width: 100%;">
                                     ➕</button>
-                                <button type="button" 
-                                    class="widht-full btn-sm btn-light me-1 border ui-tooltip" 
-                                    title="debiter" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#modalDebitMoney{{$i}}"
-                                    data-participant-name="{{$participant->group_name}}"
-                                    style="width: 100%;">
-                                    ➖</button>
                             </div>
                         </td>
                         
