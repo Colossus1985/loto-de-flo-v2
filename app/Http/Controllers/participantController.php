@@ -33,6 +33,7 @@ class participantController extends Controller
     {
         // dd($id_participant);
         $participant        = $this->participant->getParticipant('id', $id_participant, $actif);
+        // dd($participant);
         $money              = $this->money->getMoney('id_pseudo', $id_participant);
         $groups             = $this->groups->getGroups();
 

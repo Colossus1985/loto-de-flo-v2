@@ -5,14 +5,26 @@ namespace App\Repositories;
 use Illuminate\Database\QueryException;
 use Exception;
 use DB;
+use Illuminate\Support\Facades\Log;
+
 
 use App\Models\Gains;
 use App\Models\Groups;
 use App\Models\Money;
 use App\Models\Participants;
 
+use App\Repositories\ParticipantRepository;
+
 class GainRepository 
 {
+    public function __construct(
+        ParticipantRepository $participant
+        )
+    {
+        $this->participant      = $participant;
+    }
+
+    protected $participant;
     /**
      * ajout d'un Gain 
      * @param array champs
@@ -89,6 +101,8 @@ class GainRepository
     /**
      * supprimer une ligne de gains 
      * - maj l'historisation
+     * - maj amount dans money
+     * - maj totaux participant
      * - maj participant
      * @param int id ligne gain
      */
@@ -103,7 +117,21 @@ class GainRepository
             $lig_del->del = 1;
             $lig_del->save();
 
-            //récupération d'une ligne par participant correspondant dans money
+            //=== mettre à jour amount de la dernière ligne du participant du group
+            $lig_maj = Money::where('group_name', $lig_del->nameGroup)
+                ->where('creditGain', $lig_del->gainIndividuel)
+                ->where('date', $lig_del->date)
+                ->orderBy('id', 'asc')
+                ->first();
+
+            if ($lig_maj) {
+                $lig_maj->amount = $lig_maj->amount - floatval($lig_money->creditGain ?? 0);
+                $lig_maj->save();
+            } else {
+                Log::warning("Aucune ligne trouvée pour mettre à jour amount (group: {$lig_del->nameGroup}, id_pseudo: {$lig_del->id_pseudo}, date: {$lig_del->date})");
+            }
+
+            //=== récupération d'une ligne par participant correspondant dans money
             $sub = DB::table('money')
                 ->selectRaw('MAX(id) as id')
                 ->where('group_name', $lig_del->nameGroup)
@@ -123,10 +151,34 @@ class GainRepository
                 $lig_del->del = 1;
                 $lig_del->save();
 
-                // récalculer l'amount de la dernière ligne du groupe et du participant
+                //=== mettre à jour participant totaux
+                $participant    = $this->participant->getParticipant('id', $lig_money->id_pseudo);
+
+                $amount         = $participant->amount      - floatval($lig_money->creditGain ?? 0);
+                $totalAmount    = $participant->totalAmount - floatval($lig_money->creditGain ?? 0);
+                
+                $champs = [
+                    'amount'        => $amount,
+                    'totalAmount'   => $totalAmount,
+                ];
+                $res_maj_participant = $this->participant->updateParticipant($champs, $participant->id);
+                if ($res_maj_participant['erreur']) {
+                    Log::warning('erreur update lignes amount / amount total participant :' . $res_maj_participant['erreur']);
+                }
+                #############################
+
+                //=== récalculer l'amount de la dernière ligne du groupe et du participant
                 $all_lignes = Money::where('group_name', $lig_del->group_name)
                     ->where('id_pseudo', $lig_del->id_pseudo)
-                    ->where('id', '>', $lig_del->id)
+                    ->where(function($query) use ($lig_del) {
+                        $query->where('date', '>', $lig_del->date)
+                            ->orWhere(function($subquery) use ($lig_del) {
+                                $subquery->where('date', $lig_del->date)
+                                        ->where('id', '>', $lig_del->id);
+                            });
+                    })
+                    ->orderBy('date')
+                    ->orderBy('id')
                     ->get();
 
                 // dd($all_lignes, $lig_del);

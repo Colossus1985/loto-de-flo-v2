@@ -12,6 +12,8 @@ use App\Repositories\GroupsRepository;
 use Illuminate\Database\QueryException;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+
 
 class ParticipantRepository 
 {
@@ -185,6 +187,7 @@ class ParticipantRepository
 
         } catch (Exception $e) {
             // Gestion des erreurs, par exemple, si le participant n'est pas trouvé ou si une autre erreur se produit
+            Log::warning('erreur update lignes amount / amount total participant :' . $e);
             return ['erreur' => true, 'message' => 'Erreur lors de la mise à jour : ' . $e->getMessage()];
         }
 

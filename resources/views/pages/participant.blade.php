@@ -152,10 +152,10 @@
         
                         <div class="form-group form-floating mb-3">
                             <input id="floatingAmount_joue" class="form-control text-end fw-bold"
-                                @if (($participant->totalAmount - $participant->amount) == 0)
+                                @if (($participant->totalAmount) == 0)
                                     value="0.00 €" 
                                 @else 
-                                    value="{{ ifNotZero(($participant->totalAmount - $participant->amount), true, ' €', '.', ' ') }}" 
+                                    value="{{ ifNotZero(($participant->totalAmount), true, ' €', '.', ' ') }}" 
                                 @endif
                                 readonly>
                             <label for="floatingAmount_joue" class="text-nowrap">Mises en jeu globale</label>
@@ -378,7 +378,7 @@
                             @endif
 
                             <td class="d-flex justify-content-center align-items-center">
-                                @if ( !$action->creditGain >= 0.01 )
+                                @if ( !$action->creditGain >= 0.01 && !$action->debit >= 0.01 )
                                     <a href="{{ route('delLigDetailParticipant', $action->id)}}">
                                         <i class="bi bi-recycle"></i>
                                     </a>

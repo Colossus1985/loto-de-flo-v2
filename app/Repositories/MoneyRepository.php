@@ -16,6 +16,13 @@ use Illuminate\Support\Facades\Log;
 
 class MoneyRepository 
 {
+    protected $participant;
+    public function __construct(
+        ParticipantRepository $participant
+        )
+    {
+        $this->participant      = $participant;
+    }
     /**
      * récupérer le montant 
      * table : Money
@@ -72,20 +79,43 @@ class MoneyRepository
                 $lig_del->$key = $value;
             }
 
-            $lig_del->save();
+            // $lig_del->save();
+
+            //=== mettre à jour participant totaux
+            $participant    = $this->participant->getParticipant('id', $lig_del->id_pseudo);
+
+            $amount         = $participant->amount      - floatval($lig_del->credit ?? 0);
+            $totalAmount    = $participant->totalAmount - floatval($lig_del->credit ?? 0);
+            
+            $champs = [
+                'amount'        => $amount,
+                'totalAmount'   => $totalAmount,
+            ];
+            $res_maj_participant = $this->participant->updateParticipant($champs, $participant->id);
+            if ($res_maj_participant['erreur']) {
+                Log::warning('erreur update lignes amount / amount total participant :' . $res_maj_participant['erreur']);
+            }
+            #############################
 
             // récalculer l'amount de la dernière ligne du groupe et du participant
             $all_lignes = Money::where('group_name', $lig_del->group_name)
                 ->where('id_pseudo', $lig_del->id_pseudo)
-                ->where('id', '>', $lig_del->id)
+                ->where(function($query) use ($lig_del) {
+                    $query->where('date', '>', $lig_del->date)
+                          ->orWhere(function($subquery) use ($lig_del) {
+                              $subquery->where('date', $lig_del->date)
+                                       ->where('id', '>', $lig_del->id);
+                          });
+                })
+                ->orderBy('date')
+                ->orderBy('id')
                 ->get();
 
             // dd($all_lignes, $lig_del);
             foreach ($all_lignes as $ligne) {
                 $credit = floatval($lig_del->credit ?? 0);
-                $debit  = floatval($lig_del->debit ?? 0);
                 
-                $amount = ($ligne->amount - $credit) + $debit;
+                $amount = $ligne->amount - $credit;
                 // dd($solde, $credit, $debit);
                 // dump("amount = $amount");
                 // dump("credit = $credit");
@@ -259,7 +289,7 @@ class MoneyRepository
      * @param string id groupe
      * @param string id participant
      */
-    public function getCorrections(int $id_group, int $id_participant)
+    public function _getCorrections(int $id_group, int $id_participant)
     {
         $res = Money::select(
                     DB::raw('SUM(CASE WHEN money.correction = 1 THEN money.debit ELSE 0 END) AS correction')

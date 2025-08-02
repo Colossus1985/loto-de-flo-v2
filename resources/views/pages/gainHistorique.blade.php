@@ -135,10 +135,10 @@
             order: [[0, 'desc']],
             drawCallback: function () {
                 var api = this.api();
-                var c1 = api.column(2, { page: 'current' }).data().sum();
+                var c1 = api.column(3, { page: 'current' }).data().sum();
                 c1 = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(c1);
                 $("#c1").html(c1);
-                var t1 = api.column(2, { filter: 'applied' }).data().sum();
+                var t1 = api.column(3, { filter: 'applied' }).data().sum();
                 t1 = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(t1);
                 $("#t1").html(t1);
                 if (api.page.len() == -1 || api.page.info().pages == 1) {
@@ -153,7 +153,7 @@
                     var api = this.api();
 
                     const filters = [
-                        { columnIndex: 1, selectId: "#s1-filter" },
+                        { columnIndex: 2, selectId: "#s1-filter" },
                     ];
 
                     filters.forEach(({ columnIndex, selectId }) => {
