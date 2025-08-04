@@ -5,10 +5,11 @@ use App\Http\Controllers\groupsController;
 use App\Http\Controllers\logController;
 use App\Http\Controllers\moneyController;
 use App\Http\Controllers\participantController;
+use App\Http\Controllers\jeuController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get(''                                           , [logController::class, 'dashbord'])                       ->name('dashbord');
+Route::get(''                                                   , [logController::class, 'dashbord'])                       ->name('dashbord');
 
 Route::get('participants/participant/{idParticipant}/{actif}'   , [participantController::class, 'getParticipant'])         ->name('participant');
 Route::post('participants/updateParticipant/{idParticipant}'    , [participantController::class, 'updateParticipant'])      ->name('updateParticipant');
@@ -27,6 +28,9 @@ Route::post('gains/addGain'                                     , [gainControlle
 Route::post('gains/addMoney/{idParticipant}'                    , [moneyController::class, 'addMoney'])                     ->name('addMoney');
 Route::post('gains/debitMoney/{idParticipant}'                  , [moneyController::class, 'debitMoney'])                   ->name('debitMoney');
 Route::get('gains/delLigGain/{id_lig}'                          , [gainController::class, 'delLigGain'])                    ->name('delLigGain');
+
+Route::get('gains/getJeuxHistory'                               , [jeuController::class, 'getJeuHistory'])                  ->name('getJeuHistory');
+Route::get('gains/delLigJeux/{id_lig}'                          , [jeuController::class, 'delLigJeu'])                      ->name('delLigJeu');
 
 Route::post('groups/changeGroup/{idParticipant}'                , [groupsController::class, 'changeGroup'])                 ->name('changeGroup');
 Route::post('groups/addGroup'                                   , [groupsController::class, 'addGroup'])                    ->name('addGroup');

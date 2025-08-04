@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Repositories\ParticipantRepository;
 use App\Repositories\GroupsRepository;
 use App\Repositories\MoneyRepository;
+use App\Repositories\JeuRepository;
 
 use Illuminate\Http\Request;
 
@@ -13,16 +14,19 @@ class moneyController extends Controller
     protected $participant;
     protected $groups;
     protected $money;
+    protected $jeu;
 
     public function __construct(
         ParticipantRepository $participant,
         GroupsRepository $groups,
         MoneyRepository $money,
+        JeuRepository $jeu
         )
     {
         $this->participant      = $participant;
         $this->groups           = $groups;
         $this->money            = $money;
+        $this->jeu              = $jeu;
     }
 
     /**
@@ -205,10 +209,34 @@ class moneyController extends Controller
             }
         }
 
-        $liste_pseudo = [];
+        $liste_pseudo       = [];
+        $liste_pseudo_id    = [];
         foreach ($arrayParticipant as $data) {
-            $liste_pseudo[] = $data->pseudo;
+            $liste_pseudo[]     = $data->pseudo;
+            $liste_pseudo_id[]  = $data->id;
         }
+        
+        //=== insertion de ligne dans jeuHistory
+        $arrayParticipants      = json_encode($liste_pseudo);
+        $arrayParticipants_id   = json_encode($liste_pseudo_id);
+        $nb_participants        = count($request->participants);
+        $nbPersonnes            = count($liste_pseudo_id);
+
+        $champs = [
+            'group_name'        => $group[0]->nameGroup,
+            'nb_participants'   => $nb_participants,
+            'participants'      => $arrayParticipants,
+            'participants_id'   => $arrayParticipants_id,
+            'amount'            => $debitValue,
+            'amount_indi'       => $debitIndividuel,
+            'date'              => $date,
+        ];
+        $res_insert_jeu = $this->jeu->addJeu($champs);
+        if ($res_insert_jeu['erreur']) {
+            return redirect()->back()
+                ->with('error', $res_insert_jeu['message']);
+        }
+
         // Convertir le tableau des pseudonymes en une chaîne
         $liste_pseudo_str = implode(', ', $liste_pseudo);
 

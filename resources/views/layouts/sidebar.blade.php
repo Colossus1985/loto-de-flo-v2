@@ -77,7 +77,7 @@ $user_ok = $local ? true : $user_ok;
                 <li id="gains" class="nav-item{{ Request::segment(1) === 'gains' ? ' menu-is-opening menu-open' : null }}">
                     <a href="#" class="nav-link">
                         <p>
-                            GAINS
+                            JEUX
                             <i class="right fa text-yellow"></i>
                         </p>
                     </a>
@@ -94,6 +94,13 @@ $user_ok = $local ? true : $user_ok;
                             <a href="{{ route('addGainForm') }}" class="nav-link {{Route::currentRouteNamed('addGainForm') && Request::segment(1) === 'gains' ? ' active' : ''}}">
                                 <p>
                                     Ajouter Gain
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('getJeuHistory') }}" class="nav-link {{Route::currentRouteNamed('getJeuHistory') && Request::segment(1) === 'gains' ? ' active' : ''}}">
+                                <p>
+                                    Jeux
                                 </p>
                             </a>
                         </li>
